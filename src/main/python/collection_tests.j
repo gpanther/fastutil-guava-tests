@@ -56,6 +56,9 @@ import {{ metadata.package }}.{{ kind }}LinkedOpenCustomHashSet;
 import {{ metadata.package }}.{{ kind }}LinkedOpenHashSet;
 import {{ metadata.package }}.{{ kind }}Lists;
 import {{ metadata.package }}.{{ kind }}OpenHashSet;
+{% if kind != "Byte" and kind != "Char" and kind != "Short" %}
+import {{ metadata.package }}.{{ kind }}OpenHashBigSet;
+{% endif %}
 import {{ metadata.package }}.{{ kind }}RBTreeSet;
 import {{ metadata.package }}.{{ kind }}Sets;
 import {{ metadata.package }}.{{ kind }}SortedSets;
@@ -253,6 +256,9 @@ public final class {{ kind }}CollectionsTest {
       suite.addTest(getSynchronized{{ kind }}ArraySetTests());
       suite.addTest(getUnmodifiable{{ kind }}ArraySetTests());
       suite.addTest(get{{ kind }}OpenHashSetTests());
+{% if kind != "Byte" and kind != "Char" and kind != "Short" %}
+      suite.addTest(get{{ kind }}OpenHashBigSetTests());
+{% endif %}
       suite.addTest(getSingleton{{ kind }}SetTests());
       suite.addTest(getEmpty{{ kind }}SetTests());
       return suite;
@@ -276,6 +282,13 @@ public final class {{ kind }}CollectionsTest {
       return getGeneral{{ kind }}SetTests("{{ kind }}OpenHashSet", c -> new {{ kind }}OpenHashSet(c),
           Modifiable.MUTABLE);
     }
+
+{% if kind != "Byte" and kind != "Char" and kind != "Short" %}
+    private static junit.framework.Test get{{ kind }}OpenHashBigSetTests() {
+      return getGeneral{{ kind }}SetTests("{{ kind }}OpenHashBigSet", c -> new {{ kind }}OpenHashBigSet(c),
+          Modifiable.MUTABLE);
+    }
+{% endif %}
 
     private static junit.framework.Test getGeneral{{ kind }}SetTests(String testSuiteName,
         Function<Collection<{{ metadata.boxed_class }}>, Set<{{ metadata.boxed_class }}>> generator, Modifiable modifiable) {

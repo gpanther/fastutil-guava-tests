@@ -49,6 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashBigSet;
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 import it.unimi.dsi.fastutil.objects.ObjectSortedSets;
@@ -310,6 +311,7 @@ public final class ObjectCollectionsTest {
       suite.addTest(getSynchronizedObjectArraySetTests());
       suite.addTest(getUnmodifiableObjectArraySetTests());
       suite.addTest(getObjectOpenHashSetTests());
+      suite.addTest(getObjectOpenHashBigSetTests());
       suite.addTest(getSingletonObjectSetTests());
       suite.addTest(getEmptyObjectSetTests());
       return suite;
@@ -331,6 +333,11 @@ public final class ObjectCollectionsTest {
 
     private static junit.framework.Test getObjectOpenHashSetTests() {
       return getGeneralObjectSetTests("ObjectOpenHashSet", c -> new ObjectOpenHashSet<String>(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getObjectOpenHashBigSetTests() {
+      return getGeneralObjectSetTests("ObjectOpenHashBigSet", c -> new ObjectOpenHashBigSet<String>(c),
           Modifiable.MUTABLE);
     }
 

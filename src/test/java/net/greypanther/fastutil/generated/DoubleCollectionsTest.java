@@ -50,6 +50,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.doubles.DoubleLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.doubles.DoubleLists;
 import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
+import it.unimi.dsi.fastutil.doubles.DoubleOpenHashBigSet;
 import it.unimi.dsi.fastutil.doubles.DoubleRBTreeSet;
 import it.unimi.dsi.fastutil.doubles.DoubleSets;
 import it.unimi.dsi.fastutil.doubles.DoubleSortedSets;
@@ -309,6 +310,7 @@ public final class DoubleCollectionsTest {
       suite.addTest(getSynchronizedDoubleArraySetTests());
       suite.addTest(getUnmodifiableDoubleArraySetTests());
       suite.addTest(getDoubleOpenHashSetTests());
+      suite.addTest(getDoubleOpenHashBigSetTests());
       suite.addTest(getSingletonDoubleSetTests());
       suite.addTest(getEmptyDoubleSetTests());
       return suite;
@@ -330,6 +332,11 @@ public final class DoubleCollectionsTest {
 
     private static junit.framework.Test getDoubleOpenHashSetTests() {
       return getGeneralDoubleSetTests("DoubleOpenHashSet", c -> new DoubleOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getDoubleOpenHashBigSetTests() {
+      return getGeneralDoubleSetTests("DoubleOpenHashBigSet", c -> new DoubleOpenHashBigSet(c),
           Modifiable.MUTABLE);
     }
 

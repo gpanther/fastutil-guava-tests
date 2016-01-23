@@ -333,6 +333,7 @@ public final class ByteCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+
     private static junit.framework.Test getGeneralByteSetTests(String testSuiteName,
         Function<Collection<Byte>, Set<Byte>> generator, Modifiable modifiable) {
       final class Generator extends ByteGeneratorBase implements TestSetGenerator<Byte> {

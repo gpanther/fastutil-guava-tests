@@ -50,6 +50,7 @@ import it.unimi.dsi.fastutil.floats.FloatLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.floats.FloatLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.floats.FloatLists;
 import it.unimi.dsi.fastutil.floats.FloatOpenHashSet;
+import it.unimi.dsi.fastutil.floats.FloatOpenHashBigSet;
 import it.unimi.dsi.fastutil.floats.FloatRBTreeSet;
 import it.unimi.dsi.fastutil.floats.FloatSets;
 import it.unimi.dsi.fastutil.floats.FloatSortedSets;
@@ -309,6 +310,7 @@ public final class FloatCollectionsTest {
       suite.addTest(getSynchronizedFloatArraySetTests());
       suite.addTest(getUnmodifiableFloatArraySetTests());
       suite.addTest(getFloatOpenHashSetTests());
+      suite.addTest(getFloatOpenHashBigSetTests());
       suite.addTest(getSingletonFloatSetTests());
       suite.addTest(getEmptyFloatSetTests());
       return suite;
@@ -330,6 +332,11 @@ public final class FloatCollectionsTest {
 
     private static junit.framework.Test getFloatOpenHashSetTests() {
       return getGeneralFloatSetTests("FloatOpenHashSet", c -> new FloatOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getFloatOpenHashBigSetTests() {
+      return getGeneralFloatSetTests("FloatOpenHashBigSet", c -> new FloatOpenHashBigSet(c),
           Modifiable.MUTABLE);
     }
 

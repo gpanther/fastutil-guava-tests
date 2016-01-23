@@ -333,6 +333,7 @@ public final class ShortCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+
     private static junit.framework.Test getGeneralShortSetTests(String testSuiteName,
         Function<Collection<Short>, Set<Short>> generator, Modifiable modifiable) {
       final class Generator extends ShortGeneratorBase implements TestSetGenerator<Short> {

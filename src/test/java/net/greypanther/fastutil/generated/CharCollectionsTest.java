@@ -333,6 +333,7 @@ public final class CharCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+
     private static junit.framework.Test getGeneralCharSetTests(String testSuiteName,
         Function<Collection<Character>, Set<Character>> generator, Modifiable modifiable) {
       final class Generator extends CharGeneratorBase implements TestSetGenerator<Character> {

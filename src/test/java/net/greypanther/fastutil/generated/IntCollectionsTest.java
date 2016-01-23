@@ -50,6 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashBigSet;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.ints.IntSortedSets;
@@ -309,6 +310,7 @@ public final class IntCollectionsTest {
       suite.addTest(getSynchronizedIntArraySetTests());
       suite.addTest(getUnmodifiableIntArraySetTests());
       suite.addTest(getIntOpenHashSetTests());
+      suite.addTest(getIntOpenHashBigSetTests());
       suite.addTest(getSingletonIntSetTests());
       suite.addTest(getEmptyIntSetTests());
       return suite;
@@ -330,6 +332,11 @@ public final class IntCollectionsTest {
 
     private static junit.framework.Test getIntOpenHashSetTests() {
       return getGeneralIntSetTests("IntOpenHashSet", c -> new IntOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getIntOpenHashBigSetTests() {
+      return getGeneralIntSetTests("IntOpenHashBigSet", c -> new IntOpenHashBigSet(c),
           Modifiable.MUTABLE);
     }
 

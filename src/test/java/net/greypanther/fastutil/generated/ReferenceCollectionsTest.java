@@ -44,6 +44,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceBigLists;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceLists;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashBigSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSets;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 
@@ -268,6 +269,7 @@ public final class ReferenceCollectionsTest {
       suite.addTest(getSynchronizedReferenceArraySetTests());
       suite.addTest(getUnmodifiableReferenceArraySetTests());
       suite.addTest(getReferenceOpenHashSetTests());
+      suite.addTest(getReferenceOpenHashBigSetTests());
       suite.addTest(getSingletonReferenceSetTests());
       suite.addTest(getEmptyReferenceSetTests());
       return suite;
@@ -289,6 +291,11 @@ public final class ReferenceCollectionsTest {
 
     private static junit.framework.Test getReferenceOpenHashSetTests() {
       return getGeneralReferenceSetTests("ReferenceOpenHashSet", c -> new ReferenceOpenHashSet<String>(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getReferenceOpenHashBigSetTests() {
+      return getGeneralReferenceSetTests("ReferenceOpenHashBigSet", c -> new ReferenceOpenHashBigSet<String>(c),
           Modifiable.MUTABLE);
     }
 

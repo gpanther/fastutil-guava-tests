@@ -50,6 +50,7 @@ import it.unimi.dsi.fastutil.longs.LongLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongLists;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashBigSet;
 import it.unimi.dsi.fastutil.longs.LongRBTreeSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.longs.LongSortedSets;
@@ -309,6 +310,7 @@ public final class LongCollectionsTest {
       suite.addTest(getSynchronizedLongArraySetTests());
       suite.addTest(getUnmodifiableLongArraySetTests());
       suite.addTest(getLongOpenHashSetTests());
+      suite.addTest(getLongOpenHashBigSetTests());
       suite.addTest(getSingletonLongSetTests());
       suite.addTest(getEmptyLongSetTests());
       return suite;
@@ -330,6 +332,11 @@ public final class LongCollectionsTest {
 
     private static junit.framework.Test getLongOpenHashSetTests() {
       return getGeneralLongSetTests("LongOpenHashSet", c -> new LongOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLongOpenHashBigSetTests() {
+      return getGeneralLongSetTests("LongOpenHashBigSet", c -> new LongOpenHashBigSet(c),
           Modifiable.MUTABLE);
     }
 
