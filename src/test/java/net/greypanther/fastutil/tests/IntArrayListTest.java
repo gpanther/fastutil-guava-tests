@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -40,4 +41,25 @@ public final class IntArrayListTest {
     Integer[] expected = {42, null, 3};
     assertArrayEquals(expected, arr);
   }
+
+  @Test
+  public void testNullInContains() {
+    assertFalse(new IntArrayList().contains(null));
+  }
+
+  @Test
+  public void testNullInContainsAll() {
+    assertFalse(new IntArrayList().containsAll(Collections.singleton(null)));
+  }
+
+  @Test
+  public void testNullInRemove() {
+    new IntArrayList().remove(null);
+  }
+
+  @Test
+  public void testNullInRemoveAll() {
+    new IntArrayList().removeAll(Collections.singleton(null));
+  }
 }
+
