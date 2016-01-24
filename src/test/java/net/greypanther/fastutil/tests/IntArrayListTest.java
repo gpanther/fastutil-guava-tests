@@ -11,6 +11,8 @@ import java.util.ListIterator;
 import org.junit.Test;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 public final class IntArrayListTest {
   @Test
@@ -60,6 +62,25 @@ public final class IntArrayListTest {
   @Test
   public void testNullInRemoveAll() {
     new IntArrayList().removeAll(Collections.singleton(null));
+  }
+
+  @Test
+  public void testRemoveAllFromListRemovesAllOccurrances() {
+    testRemoveAllFromListRemovesAllOccurrances_internal(new ArrayList<>());
+    testRemoveAllFromListRemovesAllOccurrances_internal(new IntArrayList());
+  }
+
+  private void testRemoveAllFromListRemovesAllOccurrances_internal(List<Integer> list) {
+    list.addAll(Arrays.asList(1, 2, 1));
+    list.removeAll(Arrays.asList(1));
+    assertEquals(Collections.singletonList(2), list);
+  }
+
+  @Test
+  public void testRemoveAllFromListRemovesAllOccurrances_using_IntCollection() {
+    IntList list = new IntArrayList(new int[] {1, 2, 1});
+    list.removeAll(IntLists.singleton(1));
+    assertEquals(IntLists.singleton(1), list);
   }
 }
 
