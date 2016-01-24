@@ -13,6 +13,7 @@ import org.junit.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 public final class IntArrayListTest {
   @Test
@@ -82,5 +83,9 @@ public final class IntArrayListTest {
     list.removeAll(IntLists.singleton(1));
     assertEquals(IntLists.singleton(1), list);
   }
-}
 
+  @Test
+  public void testEmptyListIsDifferentFromEmptySet() {
+    assertNotEquals(IntSets.EMPTY_SET, IntLists.EMPTY_LIST);
+  }
+}
