@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.google.common.collect.Iterators;
+
 import it.unimi.dsi.fastutil.BigList;
 import it.unimi.dsi.fastutil.BigListIterator;
 
@@ -127,6 +129,32 @@ abstract class BigList2ListAdapter<E> implements List<E>, Serializable {
     return new BigListIterator2ListIterator(bigList.listIterator(index));
   }
 
+  @Override
+  public int hashCode() {
+    return bigList.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return bigList.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof BigList2ListAdapter) {
+      BigList2ListAdapter<?> that = (BigList2ListAdapter<?>) o;
+      return this.bigList.equals(that.bigList);
+    } else if (o instanceof List) {
+      List<?> that = (List<?>) o;
+      if (bigList.size() != that.size()) {
+        return false;
+      }
+      return Iterators.elementsEqual(bigList.iterator(), that.iterator());
+    } else {
+      return this.bigList.equals(o);
+    }
+  }
+
   abstract void bigListIteratorSet(BigListIterator<E> bigListIterator, E e);
 
   abstract void bigListIteratorAdd(BigListIterator<E> bigListIterator, E e);
@@ -181,6 +209,11 @@ abstract class BigList2ListAdapter<E> implements List<E>, Serializable {
     @Override
     public void add(E e) {
       bigListIteratorAdd(bigListIterator, e);
+    }
+
+    @Override
+    public String toString() {
+      return bigListIterator.toString();
     }
   }
 
