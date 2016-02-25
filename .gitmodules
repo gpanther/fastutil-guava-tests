@@ -1,0 +1,3 @@
+[submodule "fastutil-upstream"]
+	path = fastutil-upstream
+	url = https://github.com/vigna/fastutil.git
