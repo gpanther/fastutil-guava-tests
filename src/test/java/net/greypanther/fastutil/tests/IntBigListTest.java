@@ -2,6 +2,8 @@ package net.greypanther.fastutil.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import it.unimi.dsi.fastutil.ints.IntBigArrayBigList;
@@ -24,5 +26,12 @@ public final class IntBigListTest {
     IntBigList list = new IntBigArrayBigList();
     list.iterator().add(1);
     assertEquals(IntBigLists.singleton(1), list);
+  }
+
+  @Test
+  public void testRemoveAllModifiesCollection() {
+    IntBigList list = new IntBigArrayBigList();
+    list.removeAll(Collections.emptySet());
+    assertEquals(IntBigLists.EMPTY_BIG_LIST, list);
   }
 }
