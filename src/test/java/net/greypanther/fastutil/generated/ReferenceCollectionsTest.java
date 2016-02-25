@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -22,6 +23,7 @@ import com.google.common.collect.testing.ListTestSuiteBuilder;
 import com.google.common.collect.testing.MapTestSuiteBuilder;
 import com.google.common.collect.testing.SampleElements;
 import com.google.common.collect.testing.SetTestSuiteBuilder;
+import com.google.common.collect.testing.SortedMapTestSuiteBuilder;
 import com.google.common.collect.testing.SortedSetTestSuiteBuilder;
 import com.google.common.collect.testing.TestListGenerator;
 import com.google.common.collect.testing.TestSetGenerator;
@@ -39,12 +41,15 @@ import it.unimi.dsi.fastutil.BigListIterator;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceBigArrayBigList;
-import it.unimi.dsi.fastutil.objects.ObjectBigListIterator;
+import it.unimi.dsi.fastutil.objects.ReferenceBigListIterator;
 import it.unimi.dsi.fastutil.objects.ReferenceBigLists;
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceLists;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashBigSet;
+import it.unimi.dsi.fastutil.objects.ReferenceRBTreeSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSets;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 
@@ -159,7 +164,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -174,7 +179,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
   }
@@ -220,7 +225,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonReferenceBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -235,7 +240,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyReferenceBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -252,12 +257,12 @@ public final class ReferenceCollectionsTest {
 
       @Override
       void bigListIteratorSet(BigListIterator<String> bigListIterator, String e) {
-        ((ObjectBigListIterator<String>) bigListIterator).set(e);
+        ((ReferenceBigListIterator<String>) bigListIterator).set(e);
       }
 
       @Override
       void bigListIteratorAdd(BigListIterator<String> bigListIterator, String e) {
-        ((ObjectBigListIterator<String>) bigListIterator).add(e);
+        ((ReferenceBigListIterator<String>) bigListIterator).add(e);
       }
     }
   }
@@ -310,7 +315,7 @@ public final class ReferenceCollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -335,7 +340,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -350,7 +355,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
   }
@@ -359,6 +364,11 @@ public final class ReferenceCollectionsTest {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ReferenceCollectionsTests.SortedSets");
       suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
+      suite.addTest(getAVLTreeSetTests());
+      suite.addTest(getRBTreeSetTests());
+      suite.addTest(getSynchronizedRBTreeSetTests());
+      suite.addTest(getUnmodifiableRBTreeSetTests());
       suite.addTest(getSingletonReferenceSortedSetTests());
       suite.addTest(getEmptyReferenceSortedSetTests());
       return suite;
@@ -370,12 +380,52 @@ public final class ReferenceCollectionsTest {
           Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      final class HashStrategy implements Hash.Strategy<String> {
+        @Override
+        public int hashCode(String o) {
+          return o.hashCode();
+        }
+
+        @Override
+        public boolean equals(String a, String b) {
+          return java.util.Objects.equals(a, b);
+        }
+      }
+
+      return getGeneralReferenceSortedSetTests("ReferenceLinkedOpenCustomHashSet",
+          c -> new ReferenceLinkedOpenCustomHashSet<String>(c, new HashStrategy()), Modifiable.MUTABLE,
+          Ordering.UNSORTED_OR_INSERTION_ORDER);
+    }
+
+    private static junit.framework.Test getAVLTreeSetTests() {
+      return getGeneralReferenceSortedSetTests("ReferenceAVLTreeSet", c -> new ReferenceAVLTreeSet<String>(c),
+          Modifiable.MUTABLE, Ordering.SORTED);
+    }
+
+    private static junit.framework.Test getRBTreeSetTests() {
+      return getGeneralReferenceSortedSetTests("ReferenceRBTreeSet", c -> new ReferenceRBTreeSet<String>(c),
+          Modifiable.MUTABLE, Ordering.SORTED);
+    }
+
+    private static junit.framework.Test getSynchronizedRBTreeSetTests() {
+      return getGeneralReferenceSortedSetTests("ReferenceRBTreeSet",
+          c -> ReferenceSortedSets.synchronize(new ReferenceRBTreeSet<String>(c)), Modifiable.MUTABLE,
+          Ordering.SORTED);
+    }
+
+    private static junit.framework.Test getUnmodifiableRBTreeSetTests() {
+      return getGeneralReferenceSortedSetTests("ReferenceRBTreeSet",
+          c -> ReferenceSortedSets.unmodifiable(new ReferenceRBTreeSet<String>(c)), Modifiable.IMMUTABLE,
+          Ordering.SORTED);
+    }
+
     private static junit.framework.Test getGeneralReferenceSortedSetTests(String testSuiteName,
         Function<Collection<String>, SortedSet<String>> generator, Modifiable modifiable,
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -398,7 +448,7 @@ public final class ReferenceCollectionsTest {
         String value = Iterables.getOnlyElement(c);
         return ReferenceSortedSets.singleton(value);
       })).named("ReferenceSingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -410,7 +460,7 @@ public final class ReferenceCollectionsTest {
         assertTrue(c.isEmpty());
         return ReferenceSortedSets.EMPTY_SET;
       })).named("ReferenceSingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -735,7 +785,7 @@ public final class ReferenceCollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -789,7 +839,7 @@ public final class ReferenceCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(MapFeature.ALLOWS_NULL_KEYS);
     switch (modifiable) {
       case IMMUTABLE:
@@ -814,7 +864,7 @@ public final class ReferenceCollectionsTest {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
@@ -825,7 +875,7 @@ public final class ReferenceCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 

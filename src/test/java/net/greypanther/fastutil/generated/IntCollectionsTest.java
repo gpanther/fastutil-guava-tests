@@ -202,7 +202,7 @@ public final class IntCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("IntSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -216,7 +216,7 @@ public final class IntCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("IntEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
   }
@@ -262,7 +262,7 @@ public final class IntCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonIntBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -276,7 +276,7 @@ public final class IntCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyIntBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -351,7 +351,7 @@ public final class IntCollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -376,7 +376,7 @@ public final class IntCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("IntSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
 
@@ -390,7 +390,7 @@ public final class IntCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("IntEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
           .createTestSuite();
     }
   }
@@ -461,7 +461,7 @@ public final class IntCollectionsTest {
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -484,7 +484,7 @@ public final class IntCollectionsTest {
         Integer value = Iterables.getOnlyElement(c);
         return IntSortedSets.singleton(value);
       })).named("IntSingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -495,7 +495,7 @@ public final class IntCollectionsTest {
         assertTrue(c.isEmpty());
         return IntSortedSets.EMPTY_SET;
       })).named("IntSingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -1018,7 +1018,7 @@ public final class IntCollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -1072,7 +1072,7 @@ public final class IntCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -1096,7 +1096,7 @@ public final class IntCollectionsTest {
       Map.Entry<Integer, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
@@ -1107,7 +1107,7 @@ public final class IntCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
@@ -1150,8 +1150,8 @@ public final class IntCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
     testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -1178,7 +1178,7 @@ public final class IntCollectionsTest {
       Map.Entry<Integer, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
@@ -1190,7 +1190,7 @@ public final class IntCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
