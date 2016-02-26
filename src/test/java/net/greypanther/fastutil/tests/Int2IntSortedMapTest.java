@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 
 import org.junit.Test;
 
-import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap;
 
 public final class Int2IntSortedMapTest {
