@@ -648,6 +648,7 @@ public final class {{ kind }}CollectionsTest {
     testSuiteFeatures.add(CollectionSize.ANY);
     testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
+    testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
 {% if kind == "Object" or kind == "Reference" %}
     testSuiteFeatures.add(MapFeature.ALLOWS_NULL_KEYS);
 {% endif %}

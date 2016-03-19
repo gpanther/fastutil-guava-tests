@@ -24,8 +24,9 @@ public final class CustomToStringTest {
 
     List<Feature<?>> testSuiteFeatures =
         Arrays.asList(CollectionSize.ANY, CollectionFeature.NON_STANDARD_TOSTRING,
-            CollectionFeature.SERIALIZABLE, MapFeature.GENERAL_PURPOSE, MapFeature.ALLOWS_NULL_KEYS,
-            MapFeature.ALLOWS_NULL_VALUES, MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION);
+            CollectionFeature.SERIALIZABLE, CollectionFeature.REMOVE_OPERATIONS,
+            MapFeature.GENERAL_PURPOSE, MapFeature.ALLOWS_NULL_KEYS, MapFeature.ALLOWS_NULL_VALUES,
+            MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION);
 
     TestMapGenerator<Integer, String> generator = new TestMapGenerator<Integer, String>() {
       @Override

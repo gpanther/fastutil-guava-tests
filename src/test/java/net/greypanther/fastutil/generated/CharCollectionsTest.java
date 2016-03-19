@@ -1064,9 +1064,11 @@ public final class CharCollectionsTest {
   private static <V> junit.framework.Test getGeneralMapTests(Class<V> clazzV,
       Function<Map<Character, V>, Map<Character, V>> mapFactory, String testSuiteName,
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
-    List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+    List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
     testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
+    testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -1090,7 +1092,7 @@ public final class CharCollectionsTest {
       Map.Entry<Character, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
         .createTestSuite();
   }
 
