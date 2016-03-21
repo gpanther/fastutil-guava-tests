@@ -1,5 +1,7 @@
 # fastutil-guava-tests
 
+:warning: Use `git clone --recursive` when clonsing this repo since it uses submodule to track the upstream projects (so that it's able to use the latest code with the most bugfixes)! :warning:
+
 A combination of the [fastutil](http://fastutil.di.unimi.it/) library with [guava-testlib](https://github.com/google/guava/tree/master/guava-testlib)
 to try to suss out any bugs in the former.
 
