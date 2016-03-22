@@ -58,4 +58,13 @@ public final class Int2IntMapTest {
     map.values().removeAll(Collections.singleton(24));
     assertTrue(map.isEmpty());
   }
+
+  @Test
+  public void testSingletonMapEqualsShouldCheckTheTypeOfParamters() {
+    Int2IntMap map = Int2IntMaps.singleton(1, 2);
+    assertFalse(map.equals(Collections.singletonMap(null, 2)));
+    assertFalse(map.equals(Collections.singletonMap(1, null)));
+    assertFalse(map.equals(Collections.singletonMap("foo", 2)));
+    assertFalse(map.equals(Collections.singletonMap(1, "foo")));
+  }
 }
