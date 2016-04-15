@@ -13,6 +13,8 @@ Currently uses ECJ for compilation since javac (even with the latest Java 8 vers
 
 When running it is recommended to give more memory to Maven and redirect its output:
 
+When generating sources for fastutil use `make sources ASSERTS=1` to enable additional checks.
+
 ````
 export MAVEN_OPTS=-Xmx6000m
 mvn clean test

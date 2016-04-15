@@ -82,6 +82,11 @@ import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class {{ kind }}CollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -252,9 +257,11 @@ public final class {{ kind }}CollectionsTest {
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("{{ kind }}CollectionsTests.Sets");
-      suite.addTest(get{{ kind }}ArraySetTests());
-      suite.addTest(getSynchronized{{ kind }}ArraySetTests());
-      suite.addTest(getUnmodifiable{{ kind }}ArraySetTests());
+			if (RUN_ARRAYSET_TESTS) {
+      	suite.addTest(get{{ kind }}ArraySetTests());
+      	suite.addTest(getSynchronized{{ kind }}ArraySetTests());
+      	suite.addTest(getUnmodifiable{{ kind }}ArraySetTests());
+			}
       suite.addTest(get{{ kind }}OpenHashSetTests());
 {% if kind != "Byte" and kind != "Char" and kind != "Short" %}
       suite.addTest(get{{ kind }}OpenHashBigSetTests());
@@ -520,13 +527,15 @@ public final class {{ kind }}CollectionsTest {
   public static final class Fastutil{{ kind }}2{{ target_kind }}Maps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("{{ kind }}2ByteMaps.Maps");
-      suite.addTest(
+			if (RUN_ARRAYMAP_TESTS) {
+      	suite.addTest(
           getMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}ArrayMap::new, TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}ArrayMap::new,
+      	suite.addTest(getSynchronizedArrayMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}ArrayMap::new,
           m -> {{ kind }}2{{ target_kind }}Maps.synchronize(({{ map_cast(kind, target_kind, 'Map') }}) m), TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}ArrayMap::new,
+      	suite.addTest(getUnmodifiableArrayMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}ArrayMap::new,
           m -> {{ kind }}2{{ target_kind }}Maps.unmodifiable(({{ map_cast(kind, target_kind, 'Map') }}) m),
           TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
+			}
       suite.addTest(getMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}OpenHashMap::new,
           TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
       // Not really a sorted set?

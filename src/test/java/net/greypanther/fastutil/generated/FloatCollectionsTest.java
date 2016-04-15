@@ -145,11 +145,15 @@ import it.unimi.dsi.fastutil.floats.Float2ByteRBTreeMap;
 import it.unimi.dsi.fastutil.floats.Float2ByteSortedMap;
 import it.unimi.dsi.fastutil.floats.Float2ByteSortedMaps;
 
-
 import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class FloatCollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -202,8 +206,7 @@ public final class FloatCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("FloatSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyFloatListTests() {
@@ -216,8 +219,7 @@ public final class FloatCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("FloatEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -262,8 +264,7 @@ public final class FloatCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonFloatBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyFloatBigListTests() {
@@ -276,8 +277,7 @@ public final class FloatCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyFloatBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -306,9 +306,11 @@ public final class FloatCollectionsTest {
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("FloatCollectionsTests.Sets");
-      suite.addTest(getFloatArraySetTests());
-      suite.addTest(getSynchronizedFloatArraySetTests());
-      suite.addTest(getUnmodifiableFloatArraySetTests());
+      if (RUN_ARRAYSET_TESTS) {
+        suite.addTest(getFloatArraySetTests());
+        suite.addTest(getSynchronizedFloatArraySetTests());
+        suite.addTest(getUnmodifiableFloatArraySetTests());
+      }
       suite.addTest(getFloatOpenHashSetTests());
       suite.addTest(getFloatOpenHashBigSetTests());
       suite.addTest(getSingletonFloatSetTests());
@@ -317,7 +319,8 @@ public final class FloatCollectionsTest {
     }
 
     private static junit.framework.Test getFloatArraySetTests() {
-      return getGeneralFloatSetTests("FloatArraySet", c -> new FloatArraySet(c), Modifiable.MUTABLE);
+      return getGeneralFloatSetTests("FloatArraySet", c -> new FloatArraySet(c),
+          Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getSynchronizedFloatArraySetTests() {
@@ -376,8 +379,7 @@ public final class FloatCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("FloatSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyFloatSetTests() {
@@ -390,8 +392,7 @@ public final class FloatCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("FloatEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -541,13 +542,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2ShortMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Short.class, Float2ShortArrayMap::new, TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Short.class, Float2ShortArrayMap::new,
-          m -> Float2ShortMaps.synchronize((Float2ShortMap) m), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Short.class, Float2ShortArrayMap::new,
-          m -> Float2ShortMaps.unmodifiable((Float2ShortMap) m),
-          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Short.class, Float2ShortArrayMap::new,
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Short.class, Float2ShortArrayMap::new,
+            m -> Float2ShortMaps.synchronize((Float2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Short.class, Float2ShortArrayMap::new,
+            m -> Float2ShortMaps.unmodifiable((Float2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Short.class, Float2ShortOpenHashMap::new,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -592,13 +596,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2ReferenceMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Float2ReferenceArrayMap::new, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Float2ReferenceArrayMap::new,
-          m -> Float2ReferenceMaps.synchronize((Float2ReferenceMap<String>) m), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Float2ReferenceArrayMap::new,
-          m -> Float2ReferenceMaps.unmodifiable((Float2ReferenceMap<String>) m),
-          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Float2ReferenceArrayMap::new,
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Float2ReferenceArrayMap::new,
+            m -> Float2ReferenceMaps.synchronize((Float2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Float2ReferenceArrayMap::new,
+            m -> Float2ReferenceMaps.unmodifiable((Float2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Float2ReferenceOpenHashMap::new,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -606,8 +613,8 @@ public final class FloatCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Float2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
     }
 
@@ -632,7 +639,8 @@ public final class FloatCollectionsTest {
           TestSampleValues.REFERENCES_FOR_SORTED));
 
       // Bugs?
-      // suite.addTest(getSingletonSortedMapTests(String.class, Float2ReferenceSortedMaps::singleton,
+      // suite.addTest(getSingletonSortedMapTests(String.class,
+      // Float2ReferenceSortedMaps::singleton,
       // TestSampleValues.REFERENCES_FOR_SORTED));
       // suite.addTest(getEmptySortedMapTests(String.class, Float2ReferenceSortedMaps.EMPTY_MAP,
       // TestSampleValues.REFERENCES_FOR_SORTED));
@@ -643,13 +651,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2IntMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Integer.class, Float2IntArrayMap::new, TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Integer.class, Float2IntArrayMap::new,
-          m -> Float2IntMaps.synchronize((Float2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Float2IntArrayMap::new,
-          m -> Float2IntMaps.unmodifiable((Float2IntMap) m),
-          TestSampleValues.INT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Integer.class, Float2IntArrayMap::new,
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Integer.class, Float2IntArrayMap::new,
+            m -> Float2IntMaps.synchronize((Float2IntMap) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Float2IntArrayMap::new,
+            m -> Float2IntMaps.unmodifiable((Float2IntMap) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Integer.class, Float2IntOpenHashMap::new,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -694,13 +705,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2DoubleMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Double.class, Float2DoubleArrayMap::new, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Double.class, Float2DoubleArrayMap::new,
-          m -> Float2DoubleMaps.synchronize((Float2DoubleMap) m), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Double.class, Float2DoubleArrayMap::new,
-          m -> Float2DoubleMaps.unmodifiable((Float2DoubleMap) m),
-          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Double.class, Float2DoubleArrayMap::new,
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Double.class, Float2DoubleArrayMap::new,
+            m -> Float2DoubleMaps.synchronize((Float2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Double.class, Float2DoubleArrayMap::new,
+            m -> Float2DoubleMaps.unmodifiable((Float2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Double.class, Float2DoubleOpenHashMap::new,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -745,13 +759,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2FloatMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Float.class, Float2FloatArrayMap::new, TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Float.class, Float2FloatArrayMap::new,
-          m -> Float2FloatMaps.synchronize((Float2FloatMap) m), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Float.class, Float2FloatArrayMap::new,
-          m -> Float2FloatMaps.unmodifiable((Float2FloatMap) m),
-          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Float.class, Float2FloatArrayMap::new,
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Float.class, Float2FloatArrayMap::new,
+            m -> Float2FloatMaps.synchronize((Float2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Float.class, Float2FloatArrayMap::new,
+            m -> Float2FloatMaps.unmodifiable((Float2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Float.class, Float2FloatOpenHashMap::new,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -796,13 +813,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2LongMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Long.class, Float2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Long.class, Float2LongArrayMap::new,
-          m -> Float2LongMaps.synchronize((Float2LongMap) m), TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Long.class, Float2LongArrayMap::new,
-          m -> Float2LongMaps.unmodifiable((Float2LongMap) m),
-          TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Long.class, Float2LongArrayMap::new,
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Long.class, Float2LongArrayMap::new,
+            m -> Float2LongMaps.synchronize((Float2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Long.class, Float2LongArrayMap::new,
+            m -> Float2LongMaps.unmodifiable((Float2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Long.class, Float2LongOpenHashMap::new,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -847,13 +867,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2CharMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Character.class, Float2CharArrayMap::new, TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Character.class, Float2CharArrayMap::new,
-          m -> Float2CharMaps.synchronize((Float2CharMap) m), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Character.class, Float2CharArrayMap::new,
-          m -> Float2CharMaps.unmodifiable((Float2CharMap) m),
-          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Character.class, Float2CharArrayMap::new,
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Character.class, Float2CharArrayMap::new,
+            m -> Float2CharMaps.synchronize((Float2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Character.class, Float2CharArrayMap::new,
+            m -> Float2CharMaps.unmodifiable((Float2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Character.class, Float2CharOpenHashMap::new,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -898,13 +921,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2ObjectMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Float2ObjectArrayMap::new, TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Float2ObjectArrayMap::new,
-          m -> Float2ObjectMaps.synchronize((Float2ObjectMap<String>) m), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Float2ObjectArrayMap::new,
-          m -> Float2ObjectMaps.unmodifiable((Float2ObjectMap<String>) m),
-          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Float2ObjectArrayMap::new,
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Float2ObjectArrayMap::new,
+            m -> Float2ObjectMaps.synchronize((Float2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Float2ObjectArrayMap::new,
+            m -> Float2ObjectMaps.unmodifiable((Float2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Float2ObjectOpenHashMap::new,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -949,13 +975,16 @@ public final class FloatCollectionsTest {
   public static final class FastutilFloat2ByteMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Float2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Byte.class, Float2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Byte.class, Float2ByteArrayMap::new,
-          m -> Float2ByteMaps.synchronize((Float2ByteMap) m), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Float2ByteArrayMap::new,
-          m -> Float2ByteMaps.unmodifiable((Float2ByteMap) m),
-          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Byte.class, Float2ByteArrayMap::new,
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Byte.class, Float2ByteArrayMap::new,
+            m -> Float2ByteMaps.synchronize((Float2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Float2ByteArrayMap::new,
+            m -> Float2ByteMaps.unmodifiable((Float2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Byte.class, Float2ByteOpenHashMap::new,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -1056,7 +1085,8 @@ public final class FloatCollectionsTest {
   }
 
   private static <V> junit.framework.Test getUnmodifiableArrayMapTests(Class<V> clazzV,
-      Supplier<Map<Float, V>> mapFactory, Function<Map<Float, V>, Map<Float, V>> unmodifiableWrapper,
+      Supplier<Map<Float, V>> mapFactory,
+      Function<Map<Float, V>, Map<Float, V>> unmodifiableWrapper,
       SampleElements<V> valueSampleElements) {
     String testSuiteName = mapFactory.get().getClass().getSimpleName();
     return getGeneralMapTests(clazzV, m -> {
@@ -1097,9 +1127,8 @@ public final class FloatCollectionsTest {
     return MapTestSuiteBuilder.using(new FloatMapGenerator<V>(clazzV, map -> {
       Map.Entry<Float, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Float, V> emptyMap,
@@ -1109,8 +1138,7 @@ public final class FloatCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1174,14 +1202,14 @@ public final class FloatCollectionsTest {
 
   @SuppressWarnings("unused")
   private static <V> junit.framework.Test getSingletonSortedMapTests(Class<V> clazzV,
-      BiFunction<Float, V, SortedMap<Float, V>> singletonSortedMapFactory, V[] valueSampleElements) {
+      BiFunction<Float, V, SortedMap<Float, V>> singletonSortedMapFactory,
+      V[] valueSampleElements) {
     String testSuiteName = clazzV.getSimpleName() + "SingletonSortedMap";
     return SortedMapTestSuiteBuilder.using(new FloatSortedMapGenerator<V>(clazzV, map -> {
       Map.Entry<Float, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1192,8 +1220,7 @@ public final class FloatCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class FloatMapGenerator<V> extends TestMapGeneratorBase<Float, V> {
@@ -1217,7 +1244,8 @@ public final class FloatCollectionsTest {
     }
   }
 
-  private static final class FloatSortedMapGenerator<V> extends TestSortedMapGeneratorBase<Float, V> {
+  private static final class FloatSortedMapGenerator<V>
+      extends TestSortedMapGeneratorBase<Float, V> {
     private final Function<Map<Float, V>, SortedMap<Float, V>> mapFactory;
 
     protected FloatSortedMapGenerator(Class<V> clazzV,

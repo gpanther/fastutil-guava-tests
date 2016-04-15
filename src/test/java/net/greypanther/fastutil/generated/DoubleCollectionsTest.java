@@ -145,11 +145,15 @@ import it.unimi.dsi.fastutil.doubles.Double2ByteRBTreeMap;
 import it.unimi.dsi.fastutil.doubles.Double2ByteSortedMap;
 import it.unimi.dsi.fastutil.doubles.Double2ByteSortedMaps;
 
-
 import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class DoubleCollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -202,8 +206,7 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("DoubleSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleListTests() {
@@ -216,8 +219,7 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("DoubleEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -262,8 +264,7 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonDoubleBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleBigListTests() {
@@ -276,8 +277,7 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyDoubleBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -306,9 +306,11 @@ public final class DoubleCollectionsTest {
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("DoubleCollectionsTests.Sets");
-      suite.addTest(getDoubleArraySetTests());
-      suite.addTest(getSynchronizedDoubleArraySetTests());
-      suite.addTest(getUnmodifiableDoubleArraySetTests());
+      if (RUN_ARRAYSET_TESTS) {
+        suite.addTest(getDoubleArraySetTests());
+        suite.addTest(getSynchronizedDoubleArraySetTests());
+        suite.addTest(getUnmodifiableDoubleArraySetTests());
+      }
       suite.addTest(getDoubleOpenHashSetTests());
       suite.addTest(getDoubleOpenHashBigSetTests());
       suite.addTest(getSingletonDoubleSetTests());
@@ -317,7 +319,8 @@ public final class DoubleCollectionsTest {
     }
 
     private static junit.framework.Test getDoubleArraySetTests() {
-      return getGeneralDoubleSetTests("DoubleArraySet", c -> new DoubleArraySet(c), Modifiable.MUTABLE);
+      return getGeneralDoubleSetTests("DoubleArraySet", c -> new DoubleArraySet(c),
+          Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getSynchronizedDoubleArraySetTests() {
@@ -376,8 +379,7 @@ public final class DoubleCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("DoubleSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleSetTests() {
@@ -390,8 +392,7 @@ public final class DoubleCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("DoubleEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -541,13 +542,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2ShortMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Short.class, Double2ShortArrayMap::new, TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Short.class, Double2ShortArrayMap::new,
-          m -> Double2ShortMaps.synchronize((Double2ShortMap) m), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Short.class, Double2ShortArrayMap::new,
-          m -> Double2ShortMaps.unmodifiable((Double2ShortMap) m),
-          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Short.class, Double2ShortArrayMap::new,
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Short.class, Double2ShortArrayMap::new,
+            m -> Double2ShortMaps.synchronize((Double2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Short.class, Double2ShortArrayMap::new,
+            m -> Double2ShortMaps.unmodifiable((Double2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Short.class, Double2ShortOpenHashMap::new,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -592,13 +596,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2ReferenceMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Double2ReferenceArrayMap::new, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Double2ReferenceArrayMap::new,
-          m -> Double2ReferenceMaps.synchronize((Double2ReferenceMap<String>) m), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Double2ReferenceArrayMap::new,
-          m -> Double2ReferenceMaps.unmodifiable((Double2ReferenceMap<String>) m),
-          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Double2ReferenceArrayMap::new,
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Double2ReferenceArrayMap::new,
+            m -> Double2ReferenceMaps.synchronize((Double2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Double2ReferenceArrayMap::new,
+            m -> Double2ReferenceMaps.unmodifiable((Double2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Double2ReferenceOpenHashMap::new,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -606,8 +613,8 @@ public final class DoubleCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Double2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
     }
 
@@ -632,7 +639,8 @@ public final class DoubleCollectionsTest {
           TestSampleValues.REFERENCES_FOR_SORTED));
 
       // Bugs?
-      // suite.addTest(getSingletonSortedMapTests(String.class, Double2ReferenceSortedMaps::singleton,
+      // suite.addTest(getSingletonSortedMapTests(String.class,
+      // Double2ReferenceSortedMaps::singleton,
       // TestSampleValues.REFERENCES_FOR_SORTED));
       // suite.addTest(getEmptySortedMapTests(String.class, Double2ReferenceSortedMaps.EMPTY_MAP,
       // TestSampleValues.REFERENCES_FOR_SORTED));
@@ -643,13 +651,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2IntMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Integer.class, Double2IntArrayMap::new, TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Integer.class, Double2IntArrayMap::new,
-          m -> Double2IntMaps.synchronize((Double2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Double2IntArrayMap::new,
-          m -> Double2IntMaps.unmodifiable((Double2IntMap) m),
-          TestSampleValues.INT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Integer.class, Double2IntArrayMap::new,
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Integer.class, Double2IntArrayMap::new,
+            m -> Double2IntMaps.synchronize((Double2IntMap) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Double2IntArrayMap::new,
+            m -> Double2IntMaps.unmodifiable((Double2IntMap) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Integer.class, Double2IntOpenHashMap::new,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -694,13 +705,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2DoubleMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Double.class, Double2DoubleArrayMap::new, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Double.class, Double2DoubleArrayMap::new,
-          m -> Double2DoubleMaps.synchronize((Double2DoubleMap) m), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Double.class, Double2DoubleArrayMap::new,
-          m -> Double2DoubleMaps.unmodifiable((Double2DoubleMap) m),
-          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Double.class, Double2DoubleArrayMap::new,
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Double.class, Double2DoubleArrayMap::new,
+            m -> Double2DoubleMaps.synchronize((Double2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Double.class, Double2DoubleArrayMap::new,
+            m -> Double2DoubleMaps.unmodifiable((Double2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Double.class, Double2DoubleOpenHashMap::new,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -745,13 +759,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2FloatMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Float.class, Double2FloatArrayMap::new, TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Float.class, Double2FloatArrayMap::new,
-          m -> Double2FloatMaps.synchronize((Double2FloatMap) m), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Float.class, Double2FloatArrayMap::new,
-          m -> Double2FloatMaps.unmodifiable((Double2FloatMap) m),
-          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Float.class, Double2FloatArrayMap::new,
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Float.class, Double2FloatArrayMap::new,
+            m -> Double2FloatMaps.synchronize((Double2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Float.class, Double2FloatArrayMap::new,
+            m -> Double2FloatMaps.unmodifiable((Double2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Float.class, Double2FloatOpenHashMap::new,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -796,13 +813,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2LongMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Long.class, Double2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Long.class, Double2LongArrayMap::new,
-          m -> Double2LongMaps.synchronize((Double2LongMap) m), TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Long.class, Double2LongArrayMap::new,
-          m -> Double2LongMaps.unmodifiable((Double2LongMap) m),
-          TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Long.class, Double2LongArrayMap::new,
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Long.class, Double2LongArrayMap::new,
+            m -> Double2LongMaps.synchronize((Double2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Long.class, Double2LongArrayMap::new,
+            m -> Double2LongMaps.unmodifiable((Double2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Long.class, Double2LongOpenHashMap::new,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -847,13 +867,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2CharMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Character.class, Double2CharArrayMap::new, TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Character.class, Double2CharArrayMap::new,
-          m -> Double2CharMaps.synchronize((Double2CharMap) m), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Character.class, Double2CharArrayMap::new,
-          m -> Double2CharMaps.unmodifiable((Double2CharMap) m),
-          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Character.class, Double2CharArrayMap::new,
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Character.class, Double2CharArrayMap::new,
+            m -> Double2CharMaps.synchronize((Double2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Character.class, Double2CharArrayMap::new,
+            m -> Double2CharMaps.unmodifiable((Double2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Character.class, Double2CharOpenHashMap::new,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -898,13 +921,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2ObjectMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Double2ObjectArrayMap::new, TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Double2ObjectArrayMap::new,
-          m -> Double2ObjectMaps.synchronize((Double2ObjectMap<String>) m), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Double2ObjectArrayMap::new,
-          m -> Double2ObjectMaps.unmodifiable((Double2ObjectMap<String>) m),
-          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Double2ObjectArrayMap::new,
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Double2ObjectArrayMap::new,
+            m -> Double2ObjectMaps.synchronize((Double2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Double2ObjectArrayMap::new,
+            m -> Double2ObjectMaps.unmodifiable((Double2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Double2ObjectOpenHashMap::new,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -949,13 +975,16 @@ public final class DoubleCollectionsTest {
   public static final class FastutilDouble2ByteMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Double2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Byte.class, Double2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Byte.class, Double2ByteArrayMap::new,
-          m -> Double2ByteMaps.synchronize((Double2ByteMap) m), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Double2ByteArrayMap::new,
-          m -> Double2ByteMaps.unmodifiable((Double2ByteMap) m),
-          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Byte.class, Double2ByteArrayMap::new,
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Byte.class, Double2ByteArrayMap::new,
+            m -> Double2ByteMaps.synchronize((Double2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Double2ByteArrayMap::new,
+            m -> Double2ByteMaps.unmodifiable((Double2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Byte.class, Double2ByteOpenHashMap::new,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -1044,7 +1073,8 @@ public final class DoubleCollectionsTest {
   }
 
   private static <V> junit.framework.Test getSynchronizedArrayMapTests(Class<V> clazzV,
-      Supplier<Map<Double, V>> mapFactory, Function<Map<Double, V>, Map<Double, V>> syncrhonizeWrapper,
+      Supplier<Map<Double, V>> mapFactory,
+      Function<Map<Double, V>, Map<Double, V>> syncrhonizeWrapper,
       SampleElements<V> valueSampleElements) {
     String testSuiteName = mapFactory.get().getClass().getSimpleName();
     return getGeneralMapTests(clazzV, m -> {
@@ -1056,7 +1086,8 @@ public final class DoubleCollectionsTest {
   }
 
   private static <V> junit.framework.Test getUnmodifiableArrayMapTests(Class<V> clazzV,
-      Supplier<Map<Double, V>> mapFactory, Function<Map<Double, V>, Map<Double, V>> unmodifiableWrapper,
+      Supplier<Map<Double, V>> mapFactory,
+      Function<Map<Double, V>, Map<Double, V>> unmodifiableWrapper,
       SampleElements<V> valueSampleElements) {
     String testSuiteName = mapFactory.get().getClass().getSimpleName();
     return getGeneralMapTests(clazzV, m -> {
@@ -1097,9 +1128,8 @@ public final class DoubleCollectionsTest {
     return MapTestSuiteBuilder.using(new DoubleMapGenerator<V>(clazzV, map -> {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Double, V> emptyMap,
@@ -1109,8 +1139,7 @@ public final class DoubleCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1174,14 +1203,14 @@ public final class DoubleCollectionsTest {
 
   @SuppressWarnings("unused")
   private static <V> junit.framework.Test getSingletonSortedMapTests(Class<V> clazzV,
-      BiFunction<Double, V, SortedMap<Double, V>> singletonSortedMapFactory, V[] valueSampleElements) {
+      BiFunction<Double, V, SortedMap<Double, V>> singletonSortedMapFactory,
+      V[] valueSampleElements) {
     String testSuiteName = clazzV.getSimpleName() + "SingletonSortedMap";
     return SortedMapTestSuiteBuilder.using(new DoubleSortedMapGenerator<V>(clazzV, map -> {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1192,20 +1221,21 @@ public final class DoubleCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class DoubleMapGenerator<V> extends TestMapGeneratorBase<Double, V> {
     private final Function<Map<Double, V>, Map<Double, V>> mapFactory;
 
-    protected DoubleMapGenerator(Class<V> clazzV, Function<Map<Double, V>, Map<Double, V>> mapFactory,
+    protected DoubleMapGenerator(Class<V> clazzV,
+        Function<Map<Double, V>, Map<Double, V>> mapFactory,
         SampleElements<V> valueSampleElements) {
       this(clazzV, mapFactory, valueSampleElements, Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
-    protected DoubleMapGenerator(Class<V> clazzV, Function<Map<Double, V>, Map<Double, V>> mapFactory,
-        SampleElements<V> valueSampleElements, Ordering ordering) {
+    protected DoubleMapGenerator(Class<V> clazzV,
+        Function<Map<Double, V>, Map<Double, V>> mapFactory, SampleElements<V> valueSampleElements,
+        Ordering ordering) {
       super(Double.class, clazzV, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS, valueSampleElements,
           ordering);
       this.mapFactory = mapFactory;
@@ -1217,7 +1247,8 @@ public final class DoubleCollectionsTest {
     }
   }
 
-  private static final class DoubleSortedMapGenerator<V> extends TestSortedMapGeneratorBase<Double, V> {
+  private static final class DoubleSortedMapGenerator<V>
+      extends TestSortedMapGeneratorBase<Double, V> {
     private final Function<Map<Double, V>, SortedMap<Double, V>> mapFactory;
 
     protected DoubleSortedMapGenerator(Class<V> clazzV,
@@ -1228,7 +1259,8 @@ public final class DoubleCollectionsTest {
     protected DoubleSortedMapGenerator(Class<V> clazzV,
         Function<Map<Double, V>, SortedMap<Double, V>> mapFactory, V[] valueSampleElements,
         Ordering ordering) {
-      super(Double.class, clazzV, TestSampleValues.DOUBLES_FOR_SORTED, valueSampleElements, ordering);
+      super(Double.class, clazzV, TestSampleValues.DOUBLES_FOR_SORTED, valueSampleElements,
+          ordering);
       this.mapFactory = mapFactory;
     }
 

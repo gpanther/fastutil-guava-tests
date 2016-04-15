@@ -145,11 +145,15 @@ import it.unimi.dsi.fastutil.longs.Long2ByteRBTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteSortedMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteSortedMaps;
 
-
 import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class LongCollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -202,8 +206,7 @@ public final class LongCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("LongSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyLongListTests() {
@@ -216,8 +219,7 @@ public final class LongCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("LongEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -262,8 +264,7 @@ public final class LongCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonLongBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyLongBigListTests() {
@@ -276,8 +277,7 @@ public final class LongCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyLongBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -306,9 +306,11 @@ public final class LongCollectionsTest {
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("LongCollectionsTests.Sets");
-      suite.addTest(getLongArraySetTests());
-      suite.addTest(getSynchronizedLongArraySetTests());
-      suite.addTest(getUnmodifiableLongArraySetTests());
+      if (RUN_ARRAYSET_TESTS) {
+        suite.addTest(getLongArraySetTests());
+        suite.addTest(getSynchronizedLongArraySetTests());
+        suite.addTest(getUnmodifiableLongArraySetTests());
+      }
       suite.addTest(getLongOpenHashSetTests());
       suite.addTest(getLongOpenHashBigSetTests());
       suite.addTest(getSingletonLongSetTests());
@@ -376,8 +378,7 @@ public final class LongCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("LongSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyLongSetTests() {
@@ -390,8 +391,7 @@ public final class LongCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("LongEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -541,13 +541,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2ShortMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Short.class, Long2ShortArrayMap::new, TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Short.class, Long2ShortArrayMap::new,
-          m -> Long2ShortMaps.synchronize((Long2ShortMap) m), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Short.class, Long2ShortArrayMap::new,
-          m -> Long2ShortMaps.unmodifiable((Long2ShortMap) m),
-          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Short.class, Long2ShortArrayMap::new,
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Short.class, Long2ShortArrayMap::new,
+            m -> Long2ShortMaps.synchronize((Long2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Short.class, Long2ShortArrayMap::new,
+            m -> Long2ShortMaps.unmodifiable((Long2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Short.class, Long2ShortOpenHashMap::new,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -592,13 +595,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2ReferenceMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Long2ReferenceArrayMap::new, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Long2ReferenceArrayMap::new,
-          m -> Long2ReferenceMaps.synchronize((Long2ReferenceMap<String>) m), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Long2ReferenceArrayMap::new,
-          m -> Long2ReferenceMaps.unmodifiable((Long2ReferenceMap<String>) m),
-          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Long2ReferenceArrayMap::new,
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Long2ReferenceArrayMap::new,
+            m -> Long2ReferenceMaps.synchronize((Long2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Long2ReferenceArrayMap::new,
+            m -> Long2ReferenceMaps.unmodifiable((Long2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Long2ReferenceOpenHashMap::new,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -606,8 +612,8 @@ public final class LongCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Long2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
     }
 
@@ -643,13 +649,14 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2IntMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Integer.class, Long2IntArrayMap::new, TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Integer.class, Long2IntArrayMap::new,
-          m -> Long2IntMaps.synchronize((Long2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Long2IntArrayMap::new,
-          m -> Long2IntMaps.unmodifiable((Long2IntMap) m),
-          TestSampleValues.INT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Integer.class, Long2IntArrayMap::new,
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Integer.class, Long2IntArrayMap::new,
+            m -> Long2IntMaps.synchronize((Long2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Long2IntArrayMap::new,
+            m -> Long2IntMaps.unmodifiable((Long2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Integer.class, Long2IntOpenHashMap::new,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -694,13 +701,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2DoubleMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Double.class, Long2DoubleArrayMap::new, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Double.class, Long2DoubleArrayMap::new,
-          m -> Long2DoubleMaps.synchronize((Long2DoubleMap) m), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Double.class, Long2DoubleArrayMap::new,
-          m -> Long2DoubleMaps.unmodifiable((Long2DoubleMap) m),
-          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Double.class, Long2DoubleArrayMap::new,
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Double.class, Long2DoubleArrayMap::new,
+            m -> Long2DoubleMaps.synchronize((Long2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Double.class, Long2DoubleArrayMap::new,
+            m -> Long2DoubleMaps.unmodifiable((Long2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Double.class, Long2DoubleOpenHashMap::new,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -745,13 +755,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2FloatMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Float.class, Long2FloatArrayMap::new, TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Float.class, Long2FloatArrayMap::new,
-          m -> Long2FloatMaps.synchronize((Long2FloatMap) m), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Float.class, Long2FloatArrayMap::new,
-          m -> Long2FloatMaps.unmodifiable((Long2FloatMap) m),
-          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Float.class, Long2FloatArrayMap::new,
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Float.class, Long2FloatArrayMap::new,
+            m -> Long2FloatMaps.synchronize((Long2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Float.class, Long2FloatArrayMap::new,
+            m -> Long2FloatMaps.unmodifiable((Long2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Float.class, Long2FloatOpenHashMap::new,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -796,13 +809,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2LongMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Long.class, Long2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Long.class, Long2LongArrayMap::new,
-          m -> Long2LongMaps.synchronize((Long2LongMap) m), TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Long.class, Long2LongArrayMap::new,
-          m -> Long2LongMaps.unmodifiable((Long2LongMap) m),
-          TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(
+            getMapTests(Long.class, Long2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Long.class, Long2LongArrayMap::new,
+            m -> Long2LongMaps.synchronize((Long2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Long.class, Long2LongArrayMap::new,
+            m -> Long2LongMaps.unmodifiable((Long2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Long.class, Long2LongOpenHashMap::new,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -847,13 +863,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2CharMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Character.class, Long2CharArrayMap::new, TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Character.class, Long2CharArrayMap::new,
-          m -> Long2CharMaps.synchronize((Long2CharMap) m), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Character.class, Long2CharArrayMap::new,
-          m -> Long2CharMaps.unmodifiable((Long2CharMap) m),
-          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Character.class, Long2CharArrayMap::new,
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Character.class, Long2CharArrayMap::new,
+            m -> Long2CharMaps.synchronize((Long2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Character.class, Long2CharArrayMap::new,
+            m -> Long2CharMaps.unmodifiable((Long2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Character.class, Long2CharOpenHashMap::new,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -898,13 +917,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2ObjectMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Long2ObjectArrayMap::new, TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Long2ObjectArrayMap::new,
-          m -> Long2ObjectMaps.synchronize((Long2ObjectMap<String>) m), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Long2ObjectArrayMap::new,
-          m -> Long2ObjectMaps.unmodifiable((Long2ObjectMap<String>) m),
-          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Long2ObjectArrayMap::new,
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Long2ObjectArrayMap::new,
+            m -> Long2ObjectMaps.synchronize((Long2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Long2ObjectArrayMap::new,
+            m -> Long2ObjectMaps.unmodifiable((Long2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Long2ObjectOpenHashMap::new,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -949,13 +971,16 @@ public final class LongCollectionsTest {
   public static final class FastutilLong2ByteMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Long2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Byte.class, Long2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Byte.class, Long2ByteArrayMap::new,
-          m -> Long2ByteMaps.synchronize((Long2ByteMap) m), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Long2ByteArrayMap::new,
-          m -> Long2ByteMaps.unmodifiable((Long2ByteMap) m),
-          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(
+            getMapTests(Byte.class, Long2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Byte.class, Long2ByteArrayMap::new,
+            m -> Long2ByteMaps.synchronize((Long2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Long2ByteArrayMap::new,
+            m -> Long2ByteMaps.unmodifiable((Long2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Byte.class, Long2ByteOpenHashMap::new,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -1097,9 +1122,8 @@ public final class LongCollectionsTest {
     return MapTestSuiteBuilder.using(new LongMapGenerator<V>(clazzV, map -> {
       Map.Entry<Long, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Long, V> emptyMap,
@@ -1109,8 +1133,7 @@ public final class LongCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1180,8 +1203,7 @@ public final class LongCollectionsTest {
       Map.Entry<Long, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1192,8 +1214,7 @@ public final class LongCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class LongMapGenerator<V> extends TestMapGeneratorBase<Long, V> {

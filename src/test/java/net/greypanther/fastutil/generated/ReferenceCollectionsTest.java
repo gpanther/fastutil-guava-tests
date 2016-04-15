@@ -96,11 +96,15 @@ import it.unimi.dsi.fastutil.objects.Reference2ByteMap;
 import it.unimi.dsi.fastutil.objects.Reference2ByteMaps;
 import it.unimi.dsi.fastutil.objects.Reference2ByteOpenHashMap;
 
-
 import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class ReferenceCollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -129,8 +133,8 @@ public final class ReferenceCollectionsTest {
     }
 
     private static junit.framework.Test getReferenceArrayListTests() {
-      return getGeneralReferenceListTests("ReferenceArrayList", c -> new ReferenceArrayList<String>(c),
-          Modifiable.MUTABLE);
+      return getGeneralReferenceListTests("ReferenceArrayList",
+          c -> new ReferenceArrayList<String>(c), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getSynchronizedReferenceArrayListTests() {
@@ -140,7 +144,8 @@ public final class ReferenceCollectionsTest {
 
     private static junit.framework.Test getUnmodifiableReferenceArrayListTests() {
       return getGeneralReferenceListTests("UnmodifiableReferenceArrayList",
-          c -> ReferenceLists.unmodifiable(new ReferenceArrayList<String>(c)), Modifiable.IMMUTABLE);
+          c -> ReferenceLists.unmodifiable(new ReferenceArrayList<String>(c)),
+          Modifiable.IMMUTABLE);
     }
 
     private static junit.framework.Test getSingletonReferenceListTests() {
@@ -153,8 +158,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyReferenceListTests() {
@@ -168,17 +172,18 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ReferenceCollectionsTests.Sets");
-      suite.addTest(getReferenceArraySetTests());
-      suite.addTest(getSynchronizedReferenceArraySetTests());
-      suite.addTest(getUnmodifiableReferenceArraySetTests());
+      if (RUN_ARRAYSET_TESTS) {
+        suite.addTest(getReferenceArraySetTests());
+        suite.addTest(getSynchronizedReferenceArraySetTests());
+        suite.addTest(getUnmodifiableReferenceArraySetTests());
+      }
       suite.addTest(getReferenceOpenHashSetTests());
       suite.addTest(getReferenceOpenHashBigSetTests());
       suite.addTest(getSingletonReferenceSetTests());
@@ -187,7 +192,8 @@ public final class ReferenceCollectionsTest {
     }
 
     private static junit.framework.Test getReferenceArraySetTests() {
-      return getGeneralReferenceSetTests("ReferenceArraySet", c -> new ReferenceArraySet<String>(c), Modifiable.MUTABLE);
+      return getGeneralReferenceSetTests("ReferenceArraySet", c -> new ReferenceArraySet<String>(c),
+          Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getSynchronizedReferenceArraySetTests() {
@@ -201,13 +207,13 @@ public final class ReferenceCollectionsTest {
     }
 
     private static junit.framework.Test getReferenceOpenHashSetTests() {
-      return getGeneralReferenceSetTests("ReferenceOpenHashSet", c -> new ReferenceOpenHashSet<String>(c),
-          Modifiable.MUTABLE);
+      return getGeneralReferenceSetTests("ReferenceOpenHashSet",
+          c -> new ReferenceOpenHashSet<String>(c), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getReferenceOpenHashBigSetTests() {
-      return getGeneralReferenceSetTests("ReferenceOpenHashBigSet", c -> new ReferenceOpenHashBigSet<String>(c),
-          Modifiable.MUTABLE);
+      return getGeneralReferenceSetTests("ReferenceOpenHashBigSet",
+          c -> new ReferenceOpenHashBigSet<String>(c), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getGeneralReferenceSetTests(String testSuiteName,
@@ -246,8 +252,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyReferenceSetTests() {
@@ -261,8 +266,7 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -367,13 +371,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2ShortMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Short.class, Reference2ShortArrayMap::new, TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Short.class, Reference2ShortArrayMap::new,
-          m -> Reference2ShortMaps.synchronize((Reference2ShortMap<String>) m), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Short.class, Reference2ShortArrayMap::new,
-          m -> Reference2ShortMaps.unmodifiable((Reference2ShortMap<String>) m),
-          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Short.class, Reference2ShortArrayMap::new,
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Short.class, Reference2ShortArrayMap::new,
+            m -> Reference2ShortMaps.synchronize((Reference2ShortMap<String>) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Short.class, Reference2ShortArrayMap::new,
+            m -> Reference2ShortMaps.unmodifiable((Reference2ShortMap<String>) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Short.class, Reference2ShortOpenHashMap::new,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -396,13 +403,20 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2ReferenceMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Reference2ReferenceArrayMap::new, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Reference2ReferenceArrayMap::new,
-          m -> Reference2ReferenceMaps.synchronize((Reference2ReferenceMap<String, String>) m), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Reference2ReferenceArrayMap::new,
-          m -> Reference2ReferenceMaps.unmodifiable((Reference2ReferenceMap<String, String>) m),
-          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Reference2ReferenceArrayMap::new,
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite
+            .addTest(getSynchronizedArrayMapTests(String.class, Reference2ReferenceArrayMap::new,
+                m -> Reference2ReferenceMaps
+                    .synchronize((Reference2ReferenceMap<String, String>) m),
+                TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite
+            .addTest(getUnmodifiableArrayMapTests(String.class, Reference2ReferenceArrayMap::new,
+                m -> Reference2ReferenceMaps
+                    .unmodifiable((Reference2ReferenceMap<String, String>) m),
+                TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Reference2ReferenceOpenHashMap::new,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -410,8 +424,8 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Reference2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
     }
 
@@ -425,13 +439,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2IntMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Integer.class, Reference2IntArrayMap::new, TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Integer.class, Reference2IntArrayMap::new,
-          m -> Reference2IntMaps.synchronize((Reference2IntMap<String>) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Reference2IntArrayMap::new,
-          m -> Reference2IntMaps.unmodifiable((Reference2IntMap<String>) m),
-          TestSampleValues.INT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Integer.class, Reference2IntArrayMap::new,
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Integer.class, Reference2IntArrayMap::new,
+            m -> Reference2IntMaps.synchronize((Reference2IntMap<String>) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Reference2IntArrayMap::new,
+            m -> Reference2IntMaps.unmodifiable((Reference2IntMap<String>) m),
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Integer.class, Reference2IntOpenHashMap::new,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -454,13 +471,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2DoubleMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Double.class, Reference2DoubleArrayMap::new, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Double.class, Reference2DoubleArrayMap::new,
-          m -> Reference2DoubleMaps.synchronize((Reference2DoubleMap<String>) m), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Double.class, Reference2DoubleArrayMap::new,
-          m -> Reference2DoubleMaps.unmodifiable((Reference2DoubleMap<String>) m),
-          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Double.class, Reference2DoubleArrayMap::new,
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Double.class, Reference2DoubleArrayMap::new,
+            m -> Reference2DoubleMaps.synchronize((Reference2DoubleMap<String>) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Double.class, Reference2DoubleArrayMap::new,
+            m -> Reference2DoubleMaps.unmodifiable((Reference2DoubleMap<String>) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Double.class, Reference2DoubleOpenHashMap::new,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -483,13 +503,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2FloatMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Float.class, Reference2FloatArrayMap::new, TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Float.class, Reference2FloatArrayMap::new,
-          m -> Reference2FloatMaps.synchronize((Reference2FloatMap<String>) m), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Float.class, Reference2FloatArrayMap::new,
-          m -> Reference2FloatMaps.unmodifiable((Reference2FloatMap<String>) m),
-          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Float.class, Reference2FloatArrayMap::new,
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Float.class, Reference2FloatArrayMap::new,
+            m -> Reference2FloatMaps.synchronize((Reference2FloatMap<String>) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Float.class, Reference2FloatArrayMap::new,
+            m -> Reference2FloatMaps.unmodifiable((Reference2FloatMap<String>) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Float.class, Reference2FloatOpenHashMap::new,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -512,13 +535,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2LongMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Long.class, Reference2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Long.class, Reference2LongArrayMap::new,
-          m -> Reference2LongMaps.synchronize((Reference2LongMap<String>) m), TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Long.class, Reference2LongArrayMap::new,
-          m -> Reference2LongMaps.unmodifiable((Reference2LongMap<String>) m),
-          TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Long.class, Reference2LongArrayMap::new,
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Long.class, Reference2LongArrayMap::new,
+            m -> Reference2LongMaps.synchronize((Reference2LongMap<String>) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Long.class, Reference2LongArrayMap::new,
+            m -> Reference2LongMaps.unmodifiable((Reference2LongMap<String>) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Long.class, Reference2LongOpenHashMap::new,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -541,13 +567,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2CharMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Character.class, Reference2CharArrayMap::new, TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Character.class, Reference2CharArrayMap::new,
-          m -> Reference2CharMaps.synchronize((Reference2CharMap<String>) m), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Character.class, Reference2CharArrayMap::new,
-          m -> Reference2CharMaps.unmodifiable((Reference2CharMap<String>) m),
-          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Character.class, Reference2CharArrayMap::new,
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Character.class, Reference2CharArrayMap::new,
+            m -> Reference2CharMaps.synchronize((Reference2CharMap<String>) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Character.class, Reference2CharArrayMap::new,
+            m -> Reference2CharMaps.unmodifiable((Reference2CharMap<String>) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Character.class, Reference2CharOpenHashMap::new,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -570,13 +599,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2ObjectMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Reference2ObjectArrayMap::new, TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Reference2ObjectArrayMap::new,
-          m -> Reference2ObjectMaps.synchronize((Reference2ObjectMap<String, String>) m), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Reference2ObjectArrayMap::new,
-          m -> Reference2ObjectMaps.unmodifiable((Reference2ObjectMap<String, String>) m),
-          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Reference2ObjectArrayMap::new,
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Reference2ObjectArrayMap::new,
+            m -> Reference2ObjectMaps.synchronize((Reference2ObjectMap<String, String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Reference2ObjectArrayMap::new,
+            m -> Reference2ObjectMaps.unmodifiable((Reference2ObjectMap<String, String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Reference2ObjectOpenHashMap::new,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -599,13 +631,16 @@ public final class ReferenceCollectionsTest {
   public static final class FastutilReference2ByteMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Reference2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Byte.class, Reference2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Byte.class, Reference2ByteArrayMap::new,
-          m -> Reference2ByteMaps.synchronize((Reference2ByteMap<String>) m), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Reference2ByteArrayMap::new,
-          m -> Reference2ByteMaps.unmodifiable((Reference2ByteMap<String>) m),
-          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Byte.class, Reference2ByteArrayMap::new,
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Byte.class, Reference2ByteArrayMap::new,
+            m -> Reference2ByteMaps.synchronize((Reference2ByteMap<String>) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Reference2ByteArrayMap::new,
+            m -> Reference2ByteMaps.unmodifiable((Reference2ByteMap<String>) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Byte.class, Reference2ByteOpenHashMap::new,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -672,7 +707,8 @@ public final class ReferenceCollectionsTest {
   }
 
   private static <V> junit.framework.Test getSynchronizedArrayMapTests(Class<V> clazzV,
-      Supplier<Map<String, V>> mapFactory, Function<Map<String, V>, Map<String, V>> syncrhonizeWrapper,
+      Supplier<Map<String, V>> mapFactory,
+      Function<Map<String, V>, Map<String, V>> syncrhonizeWrapper,
       SampleElements<V> valueSampleElements) {
     String testSuiteName = mapFactory.get().getClass().getSimpleName();
     return getGeneralMapTests(clazzV, m -> {
@@ -684,7 +720,8 @@ public final class ReferenceCollectionsTest {
   }
 
   private static <V> junit.framework.Test getUnmodifiableArrayMapTests(Class<V> clazzV,
-      Supplier<Map<String, V>> mapFactory, Function<Map<String, V>, Map<String, V>> unmodifiableWrapper,
+      Supplier<Map<String, V>> mapFactory,
+      Function<Map<String, V>, Map<String, V>> unmodifiableWrapper,
       SampleElements<V> valueSampleElements) {
     String testSuiteName = mapFactory.get().getClass().getSimpleName();
     return getGeneralMapTests(clazzV, m -> {
@@ -726,9 +763,8 @@ public final class ReferenceCollectionsTest {
     return MapTestSuiteBuilder.using(new ReferenceMapGenerator<V>(clazzV, map -> {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<String, V> emptyMap,
@@ -738,21 +774,22 @@ public final class ReferenceCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
 
   private static final class ReferenceMapGenerator<V> extends TestMapGeneratorBase<String, V> {
     private final Function<Map<String, V>, Map<String, V>> mapFactory;
 
-    protected ReferenceMapGenerator(Class<V> clazzV, Function<Map<String, V>, Map<String, V>> mapFactory,
+    protected ReferenceMapGenerator(Class<V> clazzV,
+        Function<Map<String, V>, Map<String, V>> mapFactory,
         SampleElements<V> valueSampleElements) {
       this(clazzV, mapFactory, valueSampleElements, Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
-    protected ReferenceMapGenerator(Class<V> clazzV, Function<Map<String, V>, Map<String, V>> mapFactory,
-        SampleElements<V> valueSampleElements, Ordering ordering) {
+    protected ReferenceMapGenerator(Class<V> clazzV,
+        Function<Map<String, V>, Map<String, V>> mapFactory, SampleElements<V> valueSampleElements,
+        Ordering ordering) {
       super(String.class, clazzV, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS, valueSampleElements,
           ordering);
       this.mapFactory = mapFactory;

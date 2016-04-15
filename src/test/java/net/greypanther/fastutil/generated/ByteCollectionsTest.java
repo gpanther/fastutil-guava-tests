@@ -144,11 +144,15 @@ import it.unimi.dsi.fastutil.bytes.Byte2ByteRBTreeMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteSortedMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteSortedMaps;
 
-
 import junit.framework.TestSuite;
 
 @RunWith(Enclosed.class)
 public final class ByteCollectionsTest {
+  private static final boolean RUN_ARRAYMAP_TESTS =
+      System.getProperties().containsKey("runArrayMapTests");
+  private static final boolean RUN_ARRAYSET_TESTS =
+      System.getProperties().containsKey("runArraySetTests");
+
   public static final class PriorityQueue {
     @Test
     @Ignore
@@ -201,8 +205,7 @@ public final class ByteCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ByteSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyByteListTests() {
@@ -215,8 +218,7 @@ public final class ByteCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ByteEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -261,8 +263,7 @@ public final class ByteCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonByteBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyByteBigListTests() {
@@ -275,8 +276,7 @@ public final class ByteCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyByteBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -305,9 +305,11 @@ public final class ByteCollectionsTest {
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ByteCollectionsTests.Sets");
-      suite.addTest(getByteArraySetTests());
-      suite.addTest(getSynchronizedByteArraySetTests());
-      suite.addTest(getUnmodifiableByteArraySetTests());
+      if (RUN_ARRAYSET_TESTS) {
+        suite.addTest(getByteArraySetTests());
+        suite.addTest(getSynchronizedByteArraySetTests());
+        suite.addTest(getUnmodifiableByteArraySetTests());
+      }
       suite.addTest(getByteOpenHashSetTests());
       suite.addTest(getSingletonByteSetTests());
       suite.addTest(getEmptyByteSetTests());
@@ -370,8 +372,7 @@ public final class ByteCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ByteSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
 
     private static junit.framework.Test getEmptyByteSetTests() {
@@ -384,8 +385,7 @@ public final class ByteCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ByteEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-          .createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
     }
   }
 
@@ -535,13 +535,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2ShortMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Short.class, Byte2ShortArrayMap::new, TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Short.class, Byte2ShortArrayMap::new,
-          m -> Byte2ShortMaps.synchronize((Byte2ShortMap) m), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Short.class, Byte2ShortArrayMap::new,
-          m -> Byte2ShortMaps.unmodifiable((Byte2ShortMap) m),
-          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Short.class, Byte2ShortArrayMap::new,
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Short.class, Byte2ShortArrayMap::new,
+            m -> Byte2ShortMaps.synchronize((Byte2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Short.class, Byte2ShortArrayMap::new,
+            m -> Byte2ShortMaps.unmodifiable((Byte2ShortMap) m),
+            TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Short.class, Byte2ShortOpenHashMap::new,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -586,13 +589,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2ReferenceMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Byte2ReferenceArrayMap::new, TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Byte2ReferenceArrayMap::new,
-          m -> Byte2ReferenceMaps.synchronize((Byte2ReferenceMap<String>) m), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Byte2ReferenceArrayMap::new,
-          m -> Byte2ReferenceMaps.unmodifiable((Byte2ReferenceMap<String>) m),
-          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Byte2ReferenceArrayMap::new,
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Byte2ReferenceArrayMap::new,
+            m -> Byte2ReferenceMaps.synchronize((Byte2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Byte2ReferenceArrayMap::new,
+            m -> Byte2ReferenceMaps.unmodifiable((Byte2ReferenceMap<String>) m),
+            TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Byte2ReferenceOpenHashMap::new,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -600,8 +606,8 @@ public final class ByteCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Byte2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+          TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
     }
 
@@ -637,13 +643,14 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2IntMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Integer.class, Byte2IntArrayMap::new, TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Integer.class, Byte2IntArrayMap::new,
-          m -> Byte2IntMaps.synchronize((Byte2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Byte2IntArrayMap::new,
-          m -> Byte2IntMaps.unmodifiable((Byte2IntMap) m),
-          TestSampleValues.INT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Integer.class, Byte2IntArrayMap::new,
+            TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Integer.class, Byte2IntArrayMap::new,
+            m -> Byte2IntMaps.synchronize((Byte2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Integer.class, Byte2IntArrayMap::new,
+            m -> Byte2IntMaps.unmodifiable((Byte2IntMap) m), TestSampleValues.INT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Integer.class, Byte2IntOpenHashMap::new,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -688,13 +695,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2DoubleMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Double.class, Byte2DoubleArrayMap::new, TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Double.class, Byte2DoubleArrayMap::new,
-          m -> Byte2DoubleMaps.synchronize((Byte2DoubleMap) m), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Double.class, Byte2DoubleArrayMap::new,
-          m -> Byte2DoubleMaps.unmodifiable((Byte2DoubleMap) m),
-          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Double.class, Byte2DoubleArrayMap::new,
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Double.class, Byte2DoubleArrayMap::new,
+            m -> Byte2DoubleMaps.synchronize((Byte2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Double.class, Byte2DoubleArrayMap::new,
+            m -> Byte2DoubleMaps.unmodifiable((Byte2DoubleMap) m),
+            TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Double.class, Byte2DoubleOpenHashMap::new,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -739,13 +749,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2FloatMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Float.class, Byte2FloatArrayMap::new, TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Float.class, Byte2FloatArrayMap::new,
-          m -> Byte2FloatMaps.synchronize((Byte2FloatMap) m), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Float.class, Byte2FloatArrayMap::new,
-          m -> Byte2FloatMaps.unmodifiable((Byte2FloatMap) m),
-          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Float.class, Byte2FloatArrayMap::new,
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Float.class, Byte2FloatArrayMap::new,
+            m -> Byte2FloatMaps.synchronize((Byte2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Float.class, Byte2FloatArrayMap::new,
+            m -> Byte2FloatMaps.unmodifiable((Byte2FloatMap) m),
+            TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Float.class, Byte2FloatOpenHashMap::new,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -790,13 +803,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2LongMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Long.class, Byte2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Long.class, Byte2LongArrayMap::new,
-          m -> Byte2LongMaps.synchronize((Byte2LongMap) m), TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Long.class, Byte2LongArrayMap::new,
-          m -> Byte2LongMaps.unmodifiable((Byte2LongMap) m),
-          TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(
+            getMapTests(Long.class, Byte2LongArrayMap::new, TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Long.class, Byte2LongArrayMap::new,
+            m -> Byte2LongMaps.synchronize((Byte2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Long.class, Byte2LongArrayMap::new,
+            m -> Byte2LongMaps.unmodifiable((Byte2LongMap) m),
+            TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Long.class, Byte2LongOpenHashMap::new,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -841,13 +857,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2CharMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Character.class, Byte2CharArrayMap::new, TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Character.class, Byte2CharArrayMap::new,
-          m -> Byte2CharMaps.synchronize((Byte2CharMap) m), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Character.class, Byte2CharArrayMap::new,
-          m -> Byte2CharMaps.unmodifiable((Byte2CharMap) m),
-          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(Character.class, Byte2CharArrayMap::new,
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Character.class, Byte2CharArrayMap::new,
+            m -> Byte2CharMaps.synchronize((Byte2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Character.class, Byte2CharArrayMap::new,
+            m -> Byte2CharMaps.unmodifiable((Byte2CharMap) m),
+            TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Character.class, Byte2CharOpenHashMap::new,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -892,13 +911,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2ObjectMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(String.class, Byte2ObjectArrayMap::new, TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(String.class, Byte2ObjectArrayMap::new,
-          m -> Byte2ObjectMaps.synchronize((Byte2ObjectMap<String>) m), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(String.class, Byte2ObjectArrayMap::new,
-          m -> Byte2ObjectMaps.unmodifiable((Byte2ObjectMap<String>) m),
-          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(getMapTests(String.class, Byte2ObjectArrayMap::new,
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(String.class, Byte2ObjectArrayMap::new,
+            m -> Byte2ObjectMaps.synchronize((Byte2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(String.class, Byte2ObjectArrayMap::new,
+            m -> Byte2ObjectMaps.unmodifiable((Byte2ObjectMap<String>) m),
+            TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(String.class, Byte2ObjectOpenHashMap::new,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -943,13 +965,16 @@ public final class ByteCollectionsTest {
   public static final class FastutilByte2ByteMaps {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("Byte2ByteMaps.Maps");
-      suite.addTest(
-          getMapTests(Byte.class, Byte2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getSynchronizedArrayMapTests(Byte.class, Byte2ByteArrayMap::new,
-          m -> Byte2ByteMaps.synchronize((Byte2ByteMap) m), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Byte2ByteArrayMap::new,
-          m -> Byte2ByteMaps.unmodifiable((Byte2ByteMap) m),
-          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      if (RUN_ARRAYMAP_TESTS) {
+        suite.addTest(
+            getMapTests(Byte.class, Byte2ByteArrayMap::new, TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getSynchronizedArrayMapTests(Byte.class, Byte2ByteArrayMap::new,
+            m -> Byte2ByteMaps.synchronize((Byte2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+        suite.addTest(getUnmodifiableArrayMapTests(Byte.class, Byte2ByteArrayMap::new,
+            m -> Byte2ByteMaps.unmodifiable((Byte2ByteMap) m),
+            TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      }
       suite.addTest(getMapTests(Byte.class, Byte2ByteOpenHashMap::new,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       // Not really a sorted set?
@@ -1091,9 +1116,8 @@ public final class ByteCollectionsTest {
     return MapTestSuiteBuilder.using(new ByteMapGenerator<V>(clazzV, map -> {
       Map.Entry<Byte, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Byte, V> emptyMap,
@@ -1103,8 +1127,7 @@ public final class ByteCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1174,8 +1197,7 @@ public final class ByteCollectionsTest {
       Map.Entry<Byte, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1186,8 +1208,7 @@ public final class ByteCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class ByteMapGenerator<V> extends TestMapGeneratorBase<Byte, V> {

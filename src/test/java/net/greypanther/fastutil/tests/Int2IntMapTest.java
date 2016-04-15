@@ -67,4 +67,12 @@ public final class Int2IntMapTest {
     assertFalse(map.equals(Collections.singletonMap("foo", 2)));
     assertFalse(map.equals(Collections.singletonMap(1, "foo")));
   }
+
+  @Test
+  public void testToArrayShouldNullElementAfterLastEntry() {
+    Int2IntMap map = Int2IntMaps.EMPTY_MAP;
+    Object[] values = new Object[] {"test"};
+    map.entrySet().toArray(values);
+    assertNull(values[0]);
+  }
 }
