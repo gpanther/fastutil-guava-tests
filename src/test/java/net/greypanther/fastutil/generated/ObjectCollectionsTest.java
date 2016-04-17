@@ -34,7 +34,6 @@ import com.google.common.collect.testing.features.Feature;
 import com.google.common.collect.testing.features.ListFeature;
 import com.google.common.collect.testing.features.MapFeature;
 import com.google.common.collect.testing.features.SetFeature;
-
 import it.unimi.dsi.fastutil.BigList;
 import it.unimi.dsi.fastutil.BigListIterator;
 
@@ -357,9 +356,10 @@ public final class ObjectCollectionsTest {
         }
       }
 
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(4);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -384,7 +384,8 @@ public final class ObjectCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ObjectSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+              CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -399,7 +400,8 @@ public final class ObjectCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ObjectEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+              CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
   }
@@ -467,12 +469,13 @@ public final class ObjectCollectionsTest {
     private static junit.framework.Test getGeneralObjectSortedSetTests(String testSuiteName,
         Function<Collection<String>, SortedSet<String>> generator, Modifiable modifiable,
         Ordering ordering) {
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(7);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -494,7 +497,7 @@ public final class ObjectCollectionsTest {
       })).named("ObjectSingletonSortedSet")
           .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -506,7 +509,7 @@ public final class ObjectCollectionsTest {
       })).named("ObjectSingletonSortedSet")
           .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -567,14 +570,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Short.class, Object2ShortMaps::singleton,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Short.class, getEmptyMap(), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Short.class, Object2ShortMaps.emptyMap(),
+          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2ShortMaps.EMPTY_MAP;
     }
   }
 
@@ -621,14 +619,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Object2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+      suite.addTest(getEmptyMapTests(String.class, Object2ReferenceMaps.emptyMap(),
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2ReferenceMaps.EMPTY_MAP;
     }
   }
 
@@ -678,14 +671,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Integer.class, Object2IntMaps::singleton,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Integer.class, getEmptyMap(), TestSampleValues.INT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Integer.class, Object2IntMaps.emptyMap(),
+          TestSampleValues.INT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2IntMaps.EMPTY_MAP;
     }
   }
 
@@ -732,14 +720,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Double.class, Object2DoubleMaps::singleton,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Double.class, getEmptyMap(), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Double.class, Object2DoubleMaps.emptyMap(),
+          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2DoubleMaps.EMPTY_MAP;
     }
   }
 
@@ -786,14 +769,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Float.class, Object2FloatMaps::singleton,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Float.class, getEmptyMap(), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Float.class, Object2FloatMaps.emptyMap(),
+          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2FloatMaps.EMPTY_MAP;
     }
   }
 
@@ -840,14 +818,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Long.class, Object2LongMaps::singleton,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Long.class, getEmptyMap(), TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Long.class, Object2LongMaps.emptyMap(),
+          TestSampleValues.LONG_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2LongMaps.EMPTY_MAP;
     }
   }
 
@@ -894,14 +867,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Character.class, Object2CharMaps::singleton,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Character.class, getEmptyMap(), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Character.class, Object2CharMaps.emptyMap(),
+          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2CharMaps.EMPTY_MAP;
     }
   }
 
@@ -948,14 +916,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Object2ObjectMaps::singleton,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, Object2ObjectMaps.emptyMap(),
+          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2ObjectMaps.EMPTY_MAP;
     }
   }
 
@@ -1002,14 +965,9 @@ public final class ObjectCollectionsTest {
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Byte.class, Object2ByteMaps::singleton,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Byte.class, getEmptyMap(), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Byte.class, Object2ByteMaps.emptyMap(),
+          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Object2ByteMaps.EMPTY_MAP;
     }
   }
 

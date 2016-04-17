@@ -23,7 +23,9 @@ import com.google.common.collect.testing.ListTestSuiteBuilder;
 import com.google.common.collect.testing.MapTestSuiteBuilder;
 import com.google.common.collect.testing.SampleElements;
 import com.google.common.collect.testing.SetTestSuiteBuilder;
+{% if kind != "Reference" %}
 import com.google.common.collect.testing.SortedMapTestSuiteBuilder;
+{% endif %}
 import com.google.common.collect.testing.SortedSetTestSuiteBuilder;
 import com.google.common.collect.testing.TestListGenerator;
 import com.google.common.collect.testing.TestSetGenerator;
@@ -34,17 +36,18 @@ import com.google.common.collect.testing.features.Feature;
 import com.google.common.collect.testing.features.ListFeature;
 import com.google.common.collect.testing.features.MapFeature;
 import com.google.common.collect.testing.features.SetFeature;
-
+{% if kind != "Reference" %}
 import it.unimi.dsi.fastutil.BigList;
 import it.unimi.dsi.fastutil.BigListIterator;
 
-{% if kind != "Reference" %}
 import {{ metadata.package }}.{{ kind }}AVLTreeSet;
 {% endif %}
 import {{ metadata.package }}.{{ kind }}ArrayList;
 import {{ metadata.package }}.{{ kind }}ArraySet;
 import {{ metadata.package }}.{{ kind }}BigArrayBigList;
+{% if kind != "Reference" %}
 import {{ metadata.package }}.{{ kind }}BigListIterator;
+{% endif %}
 import {{ metadata.package }}.{{ kind }}BigLists;
 {% if kind == "Object" or kind == "Reference" %}
 import it.unimi.dsi.fastutil.Hash;
@@ -52,14 +55,18 @@ import it.unimi.dsi.fastutil.Hash;
 import {{ metadata.package }}.{{ kind }}Hash;
 import com.google.common.hash.Hashing;
 {% endif %}
+{% if kind != "Reference" %}
 import {{ metadata.package }}.{{ kind }}LinkedOpenCustomHashSet;
+{% endif %}
 import {{ metadata.package }}.{{ kind }}LinkedOpenHashSet;
 import {{ metadata.package }}.{{ kind }}Lists;
 import {{ metadata.package }}.{{ kind }}OpenHashSet;
 {% if kind != "Byte" and kind != "Char" and kind != "Short" %}
 import {{ metadata.package }}.{{ kind }}OpenHashBigSet;
 {% endif %}
+{% if kind != "Reference" %}
 import {{ metadata.package }}.{{ kind }}RBTreeSet;
+{% endif %}
 import {{ metadata.package }}.{{ kind }}Sets;
 import {{ metadata.package }}.{{ kind }}SortedSets;
 
@@ -161,6 +168,7 @@ public final class {{ kind }}CollectionsTest {
     }
   }
 
+{% if kind != "Reference" %}
   public static final class BigLists {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("{{ kind }}CollectionsTests.BigLists");
@@ -253,6 +261,7 @@ public final class {{ kind }}CollectionsTest {
       }
     }
   }
+{% endif %}
 
   public static final class Sets {
     public static junit.framework.Test suite() {
@@ -306,9 +315,10 @@ public final class {{ kind }}CollectionsTest {
         }
       }
 
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(4);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -333,7 +343,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("{{ kind }}SingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -350,7 +360,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("{{ kind }}EmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
   }
@@ -359,11 +369,13 @@ public final class {{ kind }}CollectionsTest {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("{{ kind }}CollectionsTests.SortedSets");
       suite.addTest(getLinkedOpenHashSetTests());
+{% if kind != "Reference" %}
       suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
       suite.addTest(getUnmodifiableRBTreeSetTests());
+{% endif %}
       suite.addTest(getSingleton{{ kind }}SortedSetTests());
       suite.addTest(getEmpty{{ kind }}SortedSetTests());
       return suite;
@@ -375,6 +387,7 @@ public final class {{ kind }}CollectionsTest {
           Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
+{% if kind != "Reference" %}
     private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
 {% if kind == "Byte" or kind == "Char" or kind == "Double" or kind == "Float" or kind == "Int" or kind == "Long" or kind == "Short" %}
       @SuppressWarnings("serial")
@@ -437,16 +450,18 @@ public final class {{ kind }}CollectionsTest {
           c -> {{ kind }}SortedSets.unmodifiable(new {{ kind }}RBTreeSet(c)), Modifiable.IMMUTABLE,
           Ordering.SORTED);
     }
+{% endif %}
 
     private static junit.framework.Test getGeneral{{ kind }}SortedSetTests(String testSuiteName,
         Function<Collection<{{ metadata.boxed_class }}>, SortedSet<{{ metadata.boxed_class }}>> generator, Modifiable modifiable,
         Ordering ordering) {
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(7);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -468,7 +483,7 @@ public final class {{ kind }}CollectionsTest {
       })).named("{{ kind }}SingletonSortedSet")
           .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -482,7 +497,7 @@ public final class {{ kind }}CollectionsTest {
       })).named("{{ kind }}SingletonSortedSet")
           .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -544,13 +559,8 @@ public final class {{ kind }}CollectionsTest {
       suite.addTest(getSingletonMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}Maps::singleton,
           TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
       suite.addTest(
-          getEmptyMapTests({{ metadatas[target_kind].boxed_class }}.class, getEmptyMap(), TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
+          getEmptyMapTests({{ metadatas[target_kind].boxed_class }}.class, {{ kind }}2{{ target_kind }}Maps.{% if kind == "Reference" or kind == "Object" or target_kind == "Reference" or target_kind == "Object" %}emptyMap(){% else %}EMPTY_MAP{% endif %}, TestSampleValues.{{ target_kind | upper }}_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) {{ kind }}2{{ target_kind }}Maps.EMPTY_MAP;
     }
   }
 

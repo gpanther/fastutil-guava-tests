@@ -32,7 +32,6 @@ import com.google.common.collect.testing.features.Feature;
 import com.google.common.collect.testing.features.ListFeature;
 import com.google.common.collect.testing.features.MapFeature;
 import com.google.common.collect.testing.features.SetFeature;
-
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
@@ -178,6 +177,7 @@ public final class ReferenceCollectionsTest {
     }
   }
 
+
   public static final class Sets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ReferenceCollectionsTests.Sets");
@@ -227,9 +227,10 @@ public final class ReferenceCollectionsTest {
         }
       }
 
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(4);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -254,7 +255,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+              CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -269,7 +271,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
+              CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
   }
@@ -289,15 +292,17 @@ public final class ReferenceCollectionsTest {
           Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
+
     private static junit.framework.Test getGeneralReferenceSortedSetTests(String testSuiteName,
         Function<Collection<String>, SortedSet<String>> generator, Modifiable modifiable,
         Ordering ordering) {
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
+      List<Feature<?>> testSuiteFeatures = new ArrayList<>(7);
       testSuiteFeatures.add(CollectionSize.ANY);
       testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
+      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -319,7 +324,7 @@ public final class ReferenceCollectionsTest {
       })).named("ReferenceSingletonSortedSet")
           .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -331,7 +336,7 @@ public final class ReferenceCollectionsTest {
       })).named("ReferenceSingletonSortedSet")
           .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
-              CollectionFeature.DESCENDING_VIEW)
+              CollectionFeature.DESCENDING_VIEW, CollectionFeature.NON_STANDARD_TOSTRING)
           .createTestSuite();
     }
 
@@ -392,14 +397,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Short.class, Reference2ShortMaps::singleton,
           TestSampleValues.SHORT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Short.class, getEmptyMap(), TestSampleValues.SHORT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Short.class, Reference2ShortMaps.emptyMap(),
+          TestSampleValues.SHORT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2ShortMaps.EMPTY_MAP;
     }
   }
 
@@ -428,14 +428,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Reference2ReferenceMaps::singleton,
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
-      suite.addTest(getEmptyMapTests(String.class, getEmptyMap(),
+      suite.addTest(getEmptyMapTests(String.class, Reference2ReferenceMaps.emptyMap(),
           TestSampleValues.REFERENCE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2ReferenceMaps.EMPTY_MAP;
     }
   }
 
@@ -460,14 +455,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.INT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Integer.class, Reference2IntMaps::singleton,
           TestSampleValues.INT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Integer.class, getEmptyMap(), TestSampleValues.INT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Integer.class, Reference2IntMaps.emptyMap(),
+          TestSampleValues.INT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2IntMaps.EMPTY_MAP;
     }
   }
 
@@ -492,14 +482,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Double.class, Reference2DoubleMaps::singleton,
           TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Double.class, getEmptyMap(), TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Double.class, Reference2DoubleMaps.emptyMap(),
+          TestSampleValues.DOUBLE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2DoubleMaps.EMPTY_MAP;
     }
   }
 
@@ -524,14 +509,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Float.class, Reference2FloatMaps::singleton,
           TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Float.class, getEmptyMap(), TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Float.class, Reference2FloatMaps.emptyMap(),
+          TestSampleValues.FLOAT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2FloatMaps.EMPTY_MAP;
     }
   }
 
@@ -556,14 +536,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Long.class, Reference2LongMaps::singleton,
           TestSampleValues.LONG_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Long.class, getEmptyMap(), TestSampleValues.LONG_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Long.class, Reference2LongMaps.emptyMap(),
+          TestSampleValues.LONG_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2LongMaps.EMPTY_MAP;
     }
   }
 
@@ -588,14 +563,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Character.class, Reference2CharMaps::singleton,
           TestSampleValues.CHAR_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Character.class, getEmptyMap(), TestSampleValues.CHAR_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Character.class, Reference2CharMaps.emptyMap(),
+          TestSampleValues.CHAR_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2CharMaps.EMPTY_MAP;
     }
   }
 
@@ -620,14 +590,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(String.class, Reference2ObjectMaps::singleton,
           TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(String.class, getEmptyMap(), TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(String.class, Reference2ObjectMaps.emptyMap(),
+          TestSampleValues.OBJECT_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2ObjectMaps.EMPTY_MAP;
     }
   }
 
@@ -652,14 +617,9 @@ public final class ReferenceCollectionsTest {
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       suite.addTest(getSingletonMapTests(Byte.class, Reference2ByteMaps::singleton,
           TestSampleValues.BYTE_SAMPLE_ELEMENTS));
-      suite.addTest(
-          getEmptyMapTests(Byte.class, getEmptyMap(), TestSampleValues.BYTE_SAMPLE_ELEMENTS));
+      suite.addTest(getEmptyMapTests(Byte.class, Reference2ByteMaps.emptyMap(),
+          TestSampleValues.BYTE_SAMPLE_ELEMENTS));
       return suite;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <X, Y> Map<X, Y> getEmptyMap() {
-      return (Map<X, Y>) Reference2ByteMaps.EMPTY_MAP;
     }
   }
 
