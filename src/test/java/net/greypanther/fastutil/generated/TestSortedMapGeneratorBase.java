@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.common.collect.testing.TestSortedMapGenerator;
 
 abstract class TestSortedMapGeneratorBase<K extends Comparable<? super K>, V>
-    extends TestMapGeneratorBase<K, V> implements TestSortedMapGenerator<K, V> {
+    extends TestMapGeneratorBase<K, V>implements TestSortedMapGenerator<K, V> {
   private final Map.Entry<K, V> belowSamplesLesser, belowSamplesGreater, aboveSamplesLesser,
       aboveSamplesGreater;
 

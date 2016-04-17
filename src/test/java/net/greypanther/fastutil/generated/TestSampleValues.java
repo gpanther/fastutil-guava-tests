@@ -42,16 +42,17 @@ final class TestSampleValues {
       -Float.MAX_VALUE, Math.E, Float.NEGATIVE_INFINITY);
   static final SampleElements<Float> FLOAT_SAMPLE_ELEMENTS = createSampleElements(FLOATS);
   static final Float[] FLOATS_FOR_SORTED =
-      getArray(Float.class, Number::floatValue, Float.NEGATIVE_INFINITY, -Float.MAX_VALUE, 0,
-          -12, 8, -7, 42, Float.MAX_VALUE, Float.POSITIVE_INFINITY);
+      getArray(Float.class, Number::floatValue, Float.NEGATIVE_INFINITY, -Float.MAX_VALUE, 0, -12,
+          8, -7, 42, Float.MAX_VALUE, Float.POSITIVE_INFINITY);
   static final SampleElements<Float> FLOAT_SAMPLE_ELEMENTS_FOR_SORTED =
       createSampleElementsForSorted(FLOATS_FOR_SORTED);
 
   static final Integer[] INTS =
       getArray(Integer.class, Number::intValue, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, -7, 42);
   static final SampleElements<Integer> INT_SAMPLE_ELEMENTS = createSampleElements(INTS);
-  static final Integer[] INTS_FOR_SORTED = getArray(Integer.class, Number::intValue, Integer.MIN_VALUE,
-      Integer.MIN_VALUE + 1, 0, -12, 8, -7, 42, Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+  static final Integer[] INTS_FOR_SORTED =
+      getArray(Integer.class, Number::intValue, Integer.MIN_VALUE, Integer.MIN_VALUE + 1, 0, -12, 8,
+          -7, 42, Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
   static final SampleElements<Integer> INT_SAMPLE_ELEMENTS_FOR_SORTED =
       createSampleElementsForSorted(INTS_FOR_SORTED);
 
@@ -66,8 +67,9 @@ final class TestSampleValues {
   static final Short[] SHORTS =
       getArray(Short.class, Number::shortValue, 0, Short.MIN_VALUE, Short.MAX_VALUE, -7, 42);
   static final SampleElements<Short> SHORT_SAMPLE_ELEMENTS = createSampleElements(SHORTS);
-  static final Short[] SHORTS_FOR_SORTED = getArray(Short.class, Number::shortValue, Short.MIN_VALUE,
-      Short.MIN_VALUE + 1, 0, -12, 8, -7, 42, Short.MAX_VALUE - 1, Short.MAX_VALUE);
+  static final Short[] SHORTS_FOR_SORTED =
+      getArray(Short.class, Number::shortValue, Short.MIN_VALUE, Short.MIN_VALUE + 1, 0, -12, 8, -7,
+          42, Short.MAX_VALUE - 1, Short.MAX_VALUE);
   static final SampleElements<Short> SHORT_SAMPLE_ELEMENTS_FOR_SORTED =
       createSampleElementsForSorted(SHORTS_FOR_SORTED);
 

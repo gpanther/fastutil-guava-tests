@@ -205,7 +205,8 @@ public final class ShortCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ShortSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyShortListTests() {
@@ -218,7 +219,8 @@ public final class ShortCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ShortEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -263,7 +265,8 @@ public final class ShortCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonShortBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyShortBigListTests() {
@@ -276,7 +279,8 @@ public final class ShortCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyShortBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -348,7 +352,7 @@ public final class ShortCollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -373,7 +377,8 @@ public final class ShortCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ShortSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyShortSetTests() {
@@ -386,7 +391,8 @@ public final class ShortCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ShortEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -456,7 +462,7 @@ public final class ShortCollectionsTest {
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -479,7 +485,7 @@ public final class ShortCollectionsTest {
         Short value = Iterables.getOnlyElement(c);
         return ShortSortedSets.singleton(value);
       })).named("ShortSingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -490,7 +496,7 @@ public final class ShortCollectionsTest {
         assertTrue(c.isEmpty());
         return ShortSortedSets.EMPTY_SET;
       })).named("ShortSingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -1041,7 +1047,7 @@ public final class ShortCollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -1096,7 +1102,7 @@ public final class ShortCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1121,8 +1127,10 @@ public final class ShortCollectionsTest {
     return MapTestSuiteBuilder.using(new ShortMapGenerator<V>(clazzV, map -> {
       Map.Entry<Short, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
-        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ONE,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Short, V> emptyMap,
@@ -1131,8 +1139,10 @@ public final class ShortCollectionsTest {
     return MapTestSuiteBuilder.using(new ShortMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1174,8 +1184,8 @@ public final class ShortCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
     testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -1203,7 +1213,8 @@ public final class ShortCollectionsTest {
       Map.Entry<Short, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1214,7 +1225,8 @@ public final class ShortCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .createTestSuite();
   }
 
   private static final class ShortMapGenerator<V> extends TestMapGeneratorBase<Short, V> {

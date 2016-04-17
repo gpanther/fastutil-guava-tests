@@ -139,7 +139,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("{{ kind }}SingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
 
@@ -156,7 +156,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("{{ kind }}EmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
   }
@@ -202,7 +202,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("Singleton{{ kind }}BigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
 
@@ -219,7 +219,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("Empty{{ kind }}BigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
 
@@ -308,7 +308,7 @@ public final class {{ kind }}CollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -333,7 +333,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("{{ kind }}SingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
 
@@ -350,7 +350,7 @@ public final class {{ kind }}CollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("{{ kind }}EmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
           .createTestSuite();
     }
   }
@@ -443,7 +443,7 @@ public final class {{ kind }}CollectionsTest {
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -466,7 +466,7 @@ public final class {{ kind }}CollectionsTest {
         {{ metadata.boxed_class }} value = Iterables.getOnlyElement(c);
         return {{ kind }}SortedSets.singleton(value);
       })).named("{{ kind }}SingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -480,7 +480,7 @@ public final class {{ kind }}CollectionsTest {
         assertTrue(c.isEmpty());
         return {{ kind }}SortedSets.EMPTY_SET;
       })).named("{{ kind }}SingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -601,7 +601,7 @@ public final class {{ kind }}CollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -655,7 +655,7 @@ public final class {{ kind }}CollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
 {% if kind == "Object" or kind == "Reference" %}
@@ -684,7 +684,7 @@ public final class {{ kind }}CollectionsTest {
       Map.Entry<{{ metadata.boxed_class }}, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
         .createTestSuite();
   }
 
@@ -695,7 +695,7 @@ public final class {{ kind }}CollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
         .createTestSuite();
   }
 
@@ -739,8 +739,8 @@ public final class {{ kind }}CollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
     testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -770,7 +770,7 @@ public final class {{ kind }}CollectionsTest {
       Map.Entry<{{ metadata.boxed_class }}, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
         .createTestSuite();
   }
 
@@ -782,7 +782,7 @@ public final class {{ kind }}CollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
         .createTestSuite();
   }
 {% endif %}

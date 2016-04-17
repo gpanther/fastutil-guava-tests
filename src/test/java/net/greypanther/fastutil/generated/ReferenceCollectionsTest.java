@@ -158,7 +158,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyReferenceListTests() {
@@ -172,7 +173,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("ReferenceEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -227,7 +229,7 @@ public final class ReferenceCollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -252,7 +254,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyReferenceSetTests() {
@@ -266,7 +269,8 @@ public final class ReferenceCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("ReferenceEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -290,7 +294,7 @@ public final class ReferenceCollectionsTest {
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -313,7 +317,7 @@ public final class ReferenceCollectionsTest {
         String value = Iterables.getOnlyElement(c);
         return ReferenceSortedSets.singleton(value);
       })).named("ReferenceSingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -325,7 +329,7 @@ public final class ReferenceCollectionsTest {
         assertTrue(c.isEmpty());
         return ReferenceSortedSets.EMPTY_SET;
       })).named("ReferenceSingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -681,7 +685,7 @@ public final class ReferenceCollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -737,7 +741,7 @@ public final class ReferenceCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     testSuiteFeatures.add(MapFeature.ALLOWS_NULL_KEYS);
@@ -763,8 +767,10 @@ public final class ReferenceCollectionsTest {
     return MapTestSuiteBuilder.using(new ReferenceMapGenerator<V>(clazzV, map -> {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
-        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ONE,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<String, V> emptyMap,
@@ -773,8 +779,10 @@ public final class ReferenceCollectionsTest {
     return MapTestSuiteBuilder.using(new ReferenceMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
 

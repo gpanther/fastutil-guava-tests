@@ -206,7 +206,8 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("DoubleSingletonList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleListTests() {
@@ -219,7 +220,8 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("DoubleEmptyList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -264,7 +266,8 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("SingletonDoubleBigList")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleBigListTests() {
@@ -277,7 +280,8 @@ public final class DoubleCollectionsTest {
       }
 
       return ListTestSuiteBuilder.using(new Generator()).named("EmptyDoubleBigList")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     @SuppressWarnings("serial")
@@ -354,7 +358,7 @@ public final class DoubleCollectionsTest {
 
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       switch (modifiable) {
         case IMMUTABLE:
           break;
@@ -379,7 +383,8 @@ public final class DoubleCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("DoubleSingletonSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
 
     private static junit.framework.Test getEmptyDoubleSetTests() {
@@ -392,7 +397,8 @@ public final class DoubleCollectionsTest {
       }
 
       return SetTestSuiteBuilder.using(new Generator()).named("DoubleEmptySet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+          .createTestSuite();
     }
   }
 
@@ -462,7 +468,7 @@ public final class DoubleCollectionsTest {
         Ordering ordering) {
       List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
       testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
       testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
       testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
       testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -485,7 +491,7 @@ public final class DoubleCollectionsTest {
         Double value = Iterables.getOnlyElement(c);
         return DoubleSortedSets.singleton(value);
       })).named("DoubleSingletonSortedSet")
-          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -496,7 +502,7 @@ public final class DoubleCollectionsTest {
         assertTrue(c.isEmpty());
         return DoubleSortedSets.EMPTY_SET;
       })).named("DoubleSingletonSortedSet")
-          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE,
+          .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS,
               CollectionFeature.KNOWN_ORDER, CollectionFeature.SUBSET_VIEW,
               CollectionFeature.DESCENDING_VIEW)
           .createTestSuite();
@@ -1047,7 +1053,7 @@ public final class DoubleCollectionsTest {
 
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(3);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     switch (modifiable) {
       case IMMUTABLE:
         break;
@@ -1103,7 +1109,7 @@ public final class DoubleCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1128,8 +1134,10 @@ public final class DoubleCollectionsTest {
     return MapTestSuiteBuilder.using(new DoubleMapGenerator<V>(clazzV, map -> {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
-        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ONE,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Double, V> emptyMap,
@@ -1138,8 +1146,10 @@ public final class DoubleCollectionsTest {
     return MapTestSuiteBuilder.using(new DoubleMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+    } , valueSampleElements))
+        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
+            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1181,8 +1191,8 @@ public final class DoubleCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
     testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
@@ -1210,7 +1220,8 @@ public final class DoubleCollectionsTest {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1221,7 +1232,8 @@ public final class DoubleCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .createTestSuite();
   }
 
   private static final class DoubleMapGenerator<V> extends TestMapGeneratorBase<Double, V> {

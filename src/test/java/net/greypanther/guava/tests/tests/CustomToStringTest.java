@@ -1,12 +1,18 @@
 package net.greypanther.guava.tests.tests;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ForwardingCollection;
+import com.google.common.collect.ForwardingMap;
+import com.google.common.collect.ForwardingSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.testing.MapTestSuiteBuilder;
 import com.google.common.collect.testing.SampleElements;
@@ -38,7 +44,7 @@ public final class CustomToStringTest {
 
       @Override
       public Map<Integer, String> create(Object... elements) {
-        Map<Integer, String> result = new MapWithCustomToString<Integer, String>();
+        Map<Integer, String> result = new MapWithCustomToString<>(new HashMap<>());
         for (Object element : elements) {
           @SuppressWarnings("unchecked")
           Map.Entry<Integer, String> entry = (Map.Entry<Integer, String>) element;
@@ -76,15 +82,74 @@ public final class CustomToStringTest {
   }
 
   @SuppressWarnings("serial")
-  private static final class MapWithCustomToString<K, V> extends HashMap<K, V> {
+  private static final class MapWithCustomToString<K, V> extends ForwardingMap<K, V>
+      implements Serializable {
+    private final Map<K, V> wrapped;
+
+    private MapWithCustomToString(Map<K, V> wrapped) {
+      this.wrapped = wrapped;
+    }
+
+    @Override
+    protected Map<K, V> delegate() {
+      return wrapped;
+    }
+
+    @Override
+    public Set<Map.Entry<K, V>> entrySet() {
+      return new SetWithCustomToString<>(wrapped.entrySet());
+    }
+
+    @Override
+    public Set<K> keySet() {
+      return new SetWithCustomToString<>(wrapped.keySet());
+    }
+
+    @Override
+    public Collection<V> values() {
+      return new CollectionWithCustomToString<>(wrapped.values());
+    }
+
     @Override
     public String toString() {
-      StringBuilder result = new StringBuilder();
-      result.append('[');
-      result.append(Joiner.on(", ")
-          .join(entrySet().stream().map(e -> e.getKey() + "=>" + e.getValue()).iterator()));
-      result.append(']');
-      return result.toString();
+      return String.format("Map<%s>", Joiner.on(", ").join(entrySet().stream()
+          .map(e -> String.format("%s => %s", e.getKey(), e.getValue())).iterator()));
+    }
+  }
+
+  private static final class SetWithCustomToString<E> extends ForwardingSet<E> {
+    private final Set<E> wrapped;
+
+    private SetWithCustomToString(Set<E> wrapped) {
+      this.wrapped = wrapped;
+    }
+
+    @Override
+    protected Set<E> delegate() {
+      return wrapped;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("Set<%s>", Joiner.on(", ").useForNull("null").join(wrapped));
+    }
+  }
+
+  private static final class CollectionWithCustomToString<E> extends ForwardingCollection<E> {
+    private final Collection<E> wrapped;
+
+    private CollectionWithCustomToString(Collection<E> wrapped) {
+      this.wrapped = wrapped;
+    }
+
+    @Override
+    protected Collection<E> delegate() {
+      return wrapped;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("Collection<%s>", Joiner.on(", ").useForNull("null").join(wrapped));
     }
   }
 }
