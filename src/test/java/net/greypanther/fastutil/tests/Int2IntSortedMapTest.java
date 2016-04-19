@@ -1,19 +1,35 @@
 package net.greypanther.fastutil.tests;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
+import static org.junit.Assert.*;
+
+import java.util.SortedMap;
 
 import org.junit.Test;
 
-import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2IntAVLTreeMap;
 
 public final class Int2IntSortedMapTest {
   @Test
-  public void testEntrySetSerializable() throws Exception {
-    serialize(new Int2IntRBTreeMap().entrySet());
+  public void testAVLTreeMapEntrySetModifiable() throws Exception {
+    SortedMap<Integer, Integer> map = new Int2IntAVLTreeMap();
+    map.put(1, 2);
+    map.entrySet().clear();
+    assertTrue(map.isEmpty());
   }
 
-  private static void serialize(Object object) throws Exception {
-    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(object);
+  @Test
+  public void testAVLTreeMapKeySetModifiable() throws Exception {
+    SortedMap<Integer, Integer> map = new Int2IntAVLTreeMap();
+    map.put(1, 2);
+    map.keySet().clear();
+    assertTrue(map.isEmpty());
+  }
+
+  @Test
+  public void testAVLTreeMapValuesModifiable() throws Exception {
+    SortedMap<Integer, Integer> map = new Int2IntAVLTreeMap();
+    map.put(1, 2);
+    map.values().clear();
+    assertTrue(map.isEmpty());
   }
 }

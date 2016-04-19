@@ -44,7 +44,6 @@ import it.unimi.dsi.fastutil.doubles.DoubleBigArrayBigList;
 import it.unimi.dsi.fastutil.doubles.DoubleBigListIterator;
 import it.unimi.dsi.fastutil.doubles.DoubleBigLists;
 import it.unimi.dsi.fastutil.doubles.DoubleHash;
-import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.doubles.DoubleLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.doubles.DoubleLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.doubles.DoubleLists;
@@ -315,7 +314,11 @@ public final class DoubleCollectionsTest {
         suite.addTest(getUnmodifiableDoubleArraySetTests());
       }
       suite.addTest(getDoubleOpenHashSetTests());
+      suite.addTest(getSynchronizedDoubleOpenHashSetTests());
+      suite.addTest(getUnmodifiableDoubleOpenHashSetTests());
       suite.addTest(getDoubleOpenHashBigSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonDoubleSetTests());
       suite.addTest(getEmptyDoubleSetTests());
       return suite;
@@ -341,9 +344,42 @@ public final class DoubleCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedDoubleOpenHashSetTests() {
+      return getGeneralDoubleSetTests("DoubleOpenHashSet",
+          c -> DoubleSets.synchronize(new DoubleOpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableDoubleOpenHashSetTests() {
+      return getGeneralDoubleSetTests("DoubleOpenHashSet",
+          c -> DoubleSets.unmodifiable(new DoubleOpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
     private static junit.framework.Test getDoubleOpenHashBigSetTests() {
       return getGeneralDoubleSetTests("DoubleOpenHashBigSet", c -> new DoubleOpenHashBigSet(c),
           Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralDoubleSetTests("DoubleLinkedOpenHashSet",
+          c -> new DoubleLinkedOpenHashSet(c), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      @SuppressWarnings("serial")
+      final class HashStrategy implements DoubleHash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode(double e) {
+          return Double.hashCode(e);
+        }
+
+        @Override
+        public boolean equals(double a, double b) {
+          return a == b;
+        }
+      }
+
+      return getGeneralDoubleSetTests("DoubleLinkedOpenCustomHashSet",
+          c -> new DoubleLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getGeneralDoubleSetTests(String testSuiteName,
@@ -407,8 +443,6 @@ public final class DoubleCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("DoubleCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -416,31 +450,6 @@ public final class DoubleCollectionsTest {
       suite.addTest(getSingletonDoubleSortedSetTests());
       suite.addTest(getEmptyDoubleSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralDoubleSortedSetTests("DoubleLinkedOpenHashSet",
-          c -> new DoubleLinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      @SuppressWarnings("serial")
-      final class HashStrategy implements DoubleHash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode(double e) {
-          return Hashing.murmur3_32().hashLong(Double.doubleToLongBits(e)).asInt();
-        }
-
-        @Override
-        public boolean equals(double a, double b) {
-          return a == b;
-        }
-      }
-
-      return getGeneralDoubleSortedSetTests("DoubleLinkedOpenCustomHashSet",
-          c -> new DoubleLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1067,7 +1076,7 @@ public final class DoubleCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1092,10 +1101,8 @@ public final class DoubleCollectionsTest {
     return MapTestSuiteBuilder.using(new DoubleMapGenerator<V>(clazzV, map -> {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Double, V> emptyMap,
@@ -1104,10 +1111,8 @@ public final class DoubleCollectionsTest {
     return MapTestSuiteBuilder.using(new DoubleMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1149,7 +1154,7 @@ public final class DoubleCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1178,8 +1183,7 @@ public final class DoubleCollectionsTest {
       Map.Entry<Double, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1190,8 +1194,7 @@ public final class DoubleCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class DoubleMapGenerator<V> extends TestMapGeneratorBase<Double, V> {

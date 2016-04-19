@@ -44,7 +44,6 @@ import it.unimi.dsi.fastutil.longs.LongBigArrayBigList;
 import it.unimi.dsi.fastutil.longs.LongBigListIterator;
 import it.unimi.dsi.fastutil.longs.LongBigLists;
 import it.unimi.dsi.fastutil.longs.LongHash;
-import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -315,7 +314,11 @@ public final class LongCollectionsTest {
         suite.addTest(getUnmodifiableLongArraySetTests());
       }
       suite.addTest(getLongOpenHashSetTests());
+      suite.addTest(getSynchronizedLongOpenHashSetTests());
+      suite.addTest(getUnmodifiableLongOpenHashSetTests());
       suite.addTest(getLongOpenHashBigSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonLongSetTests());
       suite.addTest(getEmptyLongSetTests());
       return suite;
@@ -340,9 +343,42 @@ public final class LongCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedLongOpenHashSetTests() {
+      return getGeneralLongSetTests("LongOpenHashSet",
+          c -> LongSets.synchronize(new LongOpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableLongOpenHashSetTests() {
+      return getGeneralLongSetTests("LongOpenHashSet",
+          c -> LongSets.unmodifiable(new LongOpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
     private static junit.framework.Test getLongOpenHashBigSetTests() {
       return getGeneralLongSetTests("LongOpenHashBigSet", c -> new LongOpenHashBigSet(c),
           Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralLongSetTests("LongLinkedOpenHashSet", c -> new LongLinkedOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      @SuppressWarnings("serial")
+      final class HashStrategy implements LongHash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode(long e) {
+          return Long.hashCode(e);
+        }
+
+        @Override
+        public boolean equals(long a, long b) {
+          return a == b;
+        }
+      }
+
+      return getGeneralLongSetTests("LongLinkedOpenCustomHashSet",
+          c -> new LongLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getGeneralLongSetTests(String testSuiteName,
@@ -406,8 +442,6 @@ public final class LongCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("LongCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -415,31 +449,6 @@ public final class LongCollectionsTest {
       suite.addTest(getSingletonLongSortedSetTests());
       suite.addTest(getEmptyLongSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralLongSortedSetTests("LongLinkedOpenHashSet",
-          c -> new LongLinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      @SuppressWarnings("serial")
-      final class HashStrategy implements LongHash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode(long e) {
-          return Hashing.murmur3_32().hashLong(e).asInt();
-        }
-
-        @Override
-        public boolean equals(long a, long b) {
-          return a == b;
-        }
-      }
-
-      return getGeneralLongSortedSetTests("LongLinkedOpenCustomHashSet",
-          c -> new LongLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1061,7 +1070,7 @@ public final class LongCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1086,10 +1095,8 @@ public final class LongCollectionsTest {
     return MapTestSuiteBuilder.using(new LongMapGenerator<V>(clazzV, map -> {
       Map.Entry<Long, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Long, V> emptyMap,
@@ -1098,10 +1105,8 @@ public final class LongCollectionsTest {
     return MapTestSuiteBuilder.using(new LongMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1143,7 +1148,7 @@ public final class LongCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1171,8 +1176,7 @@ public final class LongCollectionsTest {
       Map.Entry<Long, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1183,8 +1187,7 @@ public final class LongCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class LongMapGenerator<V> extends TestMapGeneratorBase<Long, V> {

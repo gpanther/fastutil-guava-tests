@@ -44,7 +44,6 @@ import it.unimi.dsi.fastutil.shorts.ShortBigArrayBigList;
 import it.unimi.dsi.fastutil.shorts.ShortBigListIterator;
 import it.unimi.dsi.fastutil.shorts.ShortBigLists;
 import it.unimi.dsi.fastutil.shorts.ShortHash;
-import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.shorts.ShortLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortLists;
@@ -314,6 +313,10 @@ public final class ShortCollectionsTest {
         suite.addTest(getUnmodifiableShortArraySetTests());
       }
       suite.addTest(getShortOpenHashSetTests());
+      suite.addTest(getSynchronizedShortOpenHashSetTests());
+      suite.addTest(getUnmodifiableShortOpenHashSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonShortSetTests());
       suite.addTest(getEmptyShortSetTests());
       return suite;
@@ -339,6 +342,39 @@ public final class ShortCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedShortOpenHashSetTests() {
+      return getGeneralShortSetTests("ShortOpenHashSet",
+          c -> ShortSets.synchronize(new ShortOpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableShortOpenHashSetTests() {
+      return getGeneralShortSetTests("ShortOpenHashSet",
+          c -> ShortSets.unmodifiable(new ShortOpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralShortSetTests("ShortLinkedOpenHashSet", c -> new ShortLinkedOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      @SuppressWarnings("serial")
+      final class HashStrategy implements ShortHash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode(short e) {
+          return e;
+        }
+
+        @Override
+        public boolean equals(short a, short b) {
+          return a == b;
+        }
+      }
+
+      return getGeneralShortSetTests("ShortLinkedOpenCustomHashSet",
+          c -> new ShortLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
+    }
 
     private static junit.framework.Test getGeneralShortSetTests(String testSuiteName,
         Function<Collection<Short>, Set<Short>> generator, Modifiable modifiable) {
@@ -401,8 +437,6 @@ public final class ShortCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ShortCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -410,31 +444,6 @@ public final class ShortCollectionsTest {
       suite.addTest(getSingletonShortSortedSetTests());
       suite.addTest(getEmptyShortSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralShortSortedSetTests("ShortLinkedOpenHashSet",
-          c -> new ShortLinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      @SuppressWarnings("serial")
-      final class HashStrategy implements ShortHash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode(short e) {
-          return Hashing.murmur3_32().hashInt(e).asInt();
-        }
-
-        @Override
-        public boolean equals(short a, short b) {
-          return a == b;
-        }
-      }
-
-      return getGeneralShortSortedSetTests("ShortLinkedOpenCustomHashSet",
-          c -> new ShortLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1060,7 +1069,7 @@ public final class ShortCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1085,10 +1094,8 @@ public final class ShortCollectionsTest {
     return MapTestSuiteBuilder.using(new ShortMapGenerator<V>(clazzV, map -> {
       Map.Entry<Short, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Short, V> emptyMap,
@@ -1097,10 +1104,8 @@ public final class ShortCollectionsTest {
     return MapTestSuiteBuilder.using(new ShortMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1142,7 +1147,7 @@ public final class ShortCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1171,8 +1176,7 @@ public final class ShortCollectionsTest {
       Map.Entry<Short, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1183,8 +1187,7 @@ public final class ShortCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class ShortMapGenerator<V> extends TestMapGeneratorBase<Short, V> {

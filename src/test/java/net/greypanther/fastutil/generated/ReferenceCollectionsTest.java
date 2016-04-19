@@ -187,7 +187,10 @@ public final class ReferenceCollectionsTest {
         suite.addTest(getUnmodifiableReferenceArraySetTests());
       }
       suite.addTest(getReferenceOpenHashSetTests());
+      suite.addTest(getSynchronizedReferenceOpenHashSetTests());
+      suite.addTest(getUnmodifiableReferenceOpenHashSetTests());
       suite.addTest(getReferenceOpenHashBigSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
       suite.addTest(getSingletonReferenceSetTests());
       suite.addTest(getEmptyReferenceSetTests());
       return suite;
@@ -213,10 +216,27 @@ public final class ReferenceCollectionsTest {
           c -> new ReferenceOpenHashSet<String>(c), Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedReferenceOpenHashSetTests() {
+      return getGeneralReferenceSetTests("ReferenceOpenHashSet",
+          c -> ReferenceSets.synchronize(new ReferenceOpenHashSet<String>(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableReferenceOpenHashSetTests() {
+      return getGeneralReferenceSetTests("ReferenceOpenHashSet",
+          c -> ReferenceSets.unmodifiable(new ReferenceOpenHashSet<String>(c)),
+          Modifiable.IMMUTABLE);
+    }
+
     private static junit.framework.Test getReferenceOpenHashBigSetTests() {
       return getGeneralReferenceSetTests("ReferenceOpenHashBigSet",
           c -> new ReferenceOpenHashBigSet<String>(c), Modifiable.MUTABLE);
     }
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralReferenceSetTests("ReferenceLinkedOpenHashSet",
+          c -> new ReferenceLinkedOpenHashSet<String>(c), Modifiable.MUTABLE);
+    }
+
 
     private static junit.framework.Test getGeneralReferenceSetTests(String testSuiteName,
         Function<Collection<String>, Set<String>> generator, Modifiable modifiable) {
@@ -280,41 +300,9 @@ public final class ReferenceCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ReferenceCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
       suite.addTest(getSingletonReferenceSortedSetTests());
       suite.addTest(getEmptyReferenceSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralReferenceSortedSetTests("ReferenceLinkedOpenHashSet",
-          c -> new ReferenceLinkedOpenHashSet<String>(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-
-    private static junit.framework.Test getGeneralReferenceSortedSetTests(String testSuiteName,
-        Function<Collection<String>, SortedSet<String>> generator, Modifiable modifiable,
-        Ordering ordering) {
-      List<Feature<?>> testSuiteFeatures = new ArrayList<>(7);
-      testSuiteFeatures.add(CollectionSize.ANY);
-      testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
-      testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
-      testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
-      testSuiteFeatures.add(CollectionFeature.DESCENDING_VIEW);
-      testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
-      switch (modifiable) {
-        case IMMUTABLE:
-          break;
-        case MUTABLE:
-          testSuiteFeatures.add(SetFeature.GENERAL_PURPOSE);
-          break;
-        default:
-          throw new IllegalArgumentException(modifiable.toString());
-      }
-
-      return SortedSetTestSuiteBuilder.using(new ReferenceSortedSetGenerator(ordering, generator))
-          .named(testSuiteName).withFeatures(testSuiteFeatures).createTestSuite();
     }
 
     private static junit.framework.Test getSingletonReferenceSortedSetTests() {
@@ -701,7 +689,7 @@ public final class ReferenceCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     testSuiteFeatures.add(MapFeature.ALLOWS_NULL_KEYS);
@@ -727,10 +715,8 @@ public final class ReferenceCollectionsTest {
     return MapTestSuiteBuilder.using(new ReferenceMapGenerator<V>(clazzV, map -> {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<String, V> emptyMap,
@@ -739,10 +725,8 @@ public final class ReferenceCollectionsTest {
     return MapTestSuiteBuilder.using(new ReferenceMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
 

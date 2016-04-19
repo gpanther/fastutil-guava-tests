@@ -44,7 +44,6 @@ import it.unimi.dsi.fastutil.floats.FloatBigArrayBigList;
 import it.unimi.dsi.fastutil.floats.FloatBigListIterator;
 import it.unimi.dsi.fastutil.floats.FloatBigLists;
 import it.unimi.dsi.fastutil.floats.FloatHash;
-import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.floats.FloatLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.floats.FloatLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.floats.FloatLists;
@@ -315,7 +314,11 @@ public final class FloatCollectionsTest {
         suite.addTest(getUnmodifiableFloatArraySetTests());
       }
       suite.addTest(getFloatOpenHashSetTests());
+      suite.addTest(getSynchronizedFloatOpenHashSetTests());
+      suite.addTest(getUnmodifiableFloatOpenHashSetTests());
       suite.addTest(getFloatOpenHashBigSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonFloatSetTests());
       suite.addTest(getEmptyFloatSetTests());
       return suite;
@@ -341,9 +344,42 @@ public final class FloatCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedFloatOpenHashSetTests() {
+      return getGeneralFloatSetTests("FloatOpenHashSet",
+          c -> FloatSets.synchronize(new FloatOpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableFloatOpenHashSetTests() {
+      return getGeneralFloatSetTests("FloatOpenHashSet",
+          c -> FloatSets.unmodifiable(new FloatOpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
     private static junit.framework.Test getFloatOpenHashBigSetTests() {
       return getGeneralFloatSetTests("FloatOpenHashBigSet", c -> new FloatOpenHashBigSet(c),
           Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralFloatSetTests("FloatLinkedOpenHashSet", c -> new FloatLinkedOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      @SuppressWarnings("serial")
+      final class HashStrategy implements FloatHash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode(float e) {
+          return Float.hashCode(e);
+        }
+
+        @Override
+        public boolean equals(float a, float b) {
+          return a == b;
+        }
+      }
+
+      return getGeneralFloatSetTests("FloatLinkedOpenCustomHashSet",
+          c -> new FloatLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getGeneralFloatSetTests(String testSuiteName,
@@ -407,8 +443,6 @@ public final class FloatCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("FloatCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -416,31 +450,6 @@ public final class FloatCollectionsTest {
       suite.addTest(getSingletonFloatSortedSetTests());
       suite.addTest(getEmptyFloatSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralFloatSortedSetTests("FloatLinkedOpenHashSet",
-          c -> new FloatLinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      @SuppressWarnings("serial")
-      final class HashStrategy implements FloatHash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode(float e) {
-          return Hashing.murmur3_32().hashLong(Float.floatToIntBits(e)).asInt();
-        }
-
-        @Override
-        public boolean equals(float a, float b) {
-          return a == b;
-        }
-      }
-
-      return getGeneralFloatSortedSetTests("FloatLinkedOpenCustomHashSet",
-          c -> new FloatLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1066,7 +1075,7 @@ public final class FloatCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1091,10 +1100,8 @@ public final class FloatCollectionsTest {
     return MapTestSuiteBuilder.using(new FloatMapGenerator<V>(clazzV, map -> {
       Map.Entry<Float, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Float, V> emptyMap,
@@ -1103,10 +1110,8 @@ public final class FloatCollectionsTest {
     return MapTestSuiteBuilder.using(new FloatMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1148,7 +1153,7 @@ public final class FloatCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1177,8 +1182,7 @@ public final class FloatCollectionsTest {
       Map.Entry<Float, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1189,8 +1193,7 @@ public final class FloatCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class FloatMapGenerator<V> extends TestMapGeneratorBase<Float, V> {

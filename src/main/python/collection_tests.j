@@ -53,7 +53,6 @@ import {{ metadata.package }}.{{ kind }}BigLists;
 import it.unimi.dsi.fastutil.Hash;
 {% else %}
 import {{ metadata.package }}.{{ kind }}Hash;
-import com.google.common.hash.Hashing;
 {% endif %}
 {% if kind != "Reference" %}
 import {{ metadata.package }}.{{ kind }}LinkedOpenCustomHashSet;
@@ -272,8 +271,14 @@ public final class {{ kind }}CollectionsTest {
       	suite.addTest(getUnmodifiable{{ kind }}ArraySetTests());
 			}
       suite.addTest(get{{ kind }}OpenHashSetTests());
+      suite.addTest(getSynchronized{{ kind }}OpenHashSetTests());
+      suite.addTest(getUnmodifiable{{ kind }}OpenHashSetTests());
 {% if kind != "Byte" and kind != "Char" and kind != "Short" %}
       suite.addTest(get{{ kind }}OpenHashBigSetTests());
+{% endif %}
+      suite.addTest(getLinkedOpenHashSetTests());
+{% if kind != "Reference" %}
+      suite.addTest(getLinkedOpenCustomHashSetTests());
 {% endif %}
       suite.addTest(getSingleton{{ kind }}SetTests());
       suite.addTest(getEmpty{{ kind }}SetTests());
@@ -299,10 +304,67 @@ public final class {{ kind }}CollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronized{{ kind }}OpenHashSetTests() {
+      return getGeneral{{ kind }}SetTests("{{ kind }}OpenHashSet",
+          c -> {{ kind }}Sets.synchronize(new {{ kind }}OpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiable{{ kind }}OpenHashSetTests() {
+      return getGeneral{{ kind }}SetTests("{{ kind }}OpenHashSet",
+          c -> {{ kind }}Sets.unmodifiable(new {{ kind }}OpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
 {% if kind != "Byte" and kind != "Char" and kind != "Short" %}
     private static junit.framework.Test get{{ kind }}OpenHashBigSetTests() {
       return getGeneral{{ kind }}SetTests("{{ kind }}OpenHashBigSet", c -> new {{ kind }}OpenHashBigSet(c),
           Modifiable.MUTABLE);
+    }
+{% endif %}
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneral{{ kind }}SetTests("{{ kind }}LinkedOpenHashSet", c -> new {{ kind }}LinkedOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+{% if kind != "Reference" %}
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+{% if kind == "Byte" or kind == "Char" or kind == "Double" or kind == "Float" or kind == "Int" or kind == "Long" or kind == "Short" %}
+      @SuppressWarnings("serial")
+      final class HashStrategy implements {{ kind }}Hash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode({{ metadata.primitive }} e) {
+{% if kind == "Byte" or kind == "Char" or kind == "Int" or kind == "Short" %}
+          return e;
+{% elif kind == "Long" %}
+          return Long.hashCode(e);
+{% elif kind == "Double" %}
+          return Double.hashCode(e);
+{% elif kind == "Float" %}
+          return Float.hashCode(e);
+{% endif %}
+        }
+
+        @Override
+        public boolean equals({{ metadata.primitive }} a, {{ metadata.primitive }} b) {
+          return a == b;
+        }
+      }
+{% elif kind == "Object" or kind == "Reference" %}
+      final class HashStrategy implements Hash.Strategy<{{ metadata.boxed_class }}> {
+        @Override
+        public int hashCode({{ metadata.boxed_class }} o) {
+          return o.hashCode();
+        }
+
+        @Override
+        public boolean equals({{ metadata.boxed_class }} a, {{ metadata.boxed_class }} b) {
+          return java.util.Objects.equals(a, b);
+        }
+      }
+{% endif %}
+
+      return getGeneral{{ kind }}SetTests("{{ kind }}LinkedOpenCustomHashSet",
+          c -> new {{ kind }}LinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
     }
 {% endif %}
 
@@ -368,9 +430,7 @@ public final class {{ kind }}CollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("{{ kind }}CollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
 {% if kind != "Reference" %}
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -381,54 +441,7 @@ public final class {{ kind }}CollectionsTest {
       return suite;
     }
 
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneral{{ kind }}SortedSetTests("{{ kind }}LinkedOpenHashSet",
-          c -> new {{ kind }}LinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
 {% if kind != "Reference" %}
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-{% if kind == "Byte" or kind == "Char" or kind == "Double" or kind == "Float" or kind == "Int" or kind == "Long" or kind == "Short" %}
-      @SuppressWarnings("serial")
-      final class HashStrategy implements {{ kind }}Hash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode({{ metadata.primitive }} e) {
-{% if kind == "Byte" or kind == "Char" or kind == "Int" or kind == "Short" %}
-          return Hashing.murmur3_32().hashInt(e).asInt();
-{% elif kind == "Long" %}
-          return Hashing.murmur3_32().hashLong(e).asInt();
-{% elif kind == "Double" %}
-          return Hashing.murmur3_32().hashLong(Double.doubleToLongBits(e)).asInt();
-{% elif kind == "Float" %}
-          return Hashing.murmur3_32().hashLong(Float.floatToIntBits(e)).asInt();
-{% endif %}
-        }
-
-        @Override
-        public boolean equals({{ metadata.primitive }} a, {{ metadata.primitive }} b) {
-          return a == b;
-        }
-      }
-{% elif kind == "Object" or kind == "Reference" %}
-      final class HashStrategy implements Hash.Strategy<{{ metadata.boxed_class }}> {
-        @Override
-        public int hashCode({{ metadata.boxed_class }} o) {
-          return o.hashCode();
-        }
-
-        @Override
-        public boolean equals({{ metadata.boxed_class }} a, {{ metadata.boxed_class }} b) {
-          return java.util.Objects.equals(a, b);
-        }
-      }
-{% endif %}
-
-      return getGeneral{{ kind }}SortedSetTests("{{ kind }}LinkedOpenCustomHashSet",
-          c -> new {{ kind }}LinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
     private static junit.framework.Test getAVLTreeSetTests() {
       return getGeneral{{ kind }}SortedSetTests("{{ kind }}AVLTreeSet", c -> new {{ kind }}AVLTreeSet(c),
           Modifiable.MUTABLE, Ordering.SORTED);
@@ -665,7 +678,7 @@ public final class {{ kind }}CollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
 {% if kind == "Object" or kind == "Reference" %}
@@ -694,7 +707,7 @@ public final class {{ kind }}CollectionsTest {
       Map.Entry<{{ metadata.boxed_class }}, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
         .createTestSuite();
   }
 
@@ -705,7 +718,7 @@ public final class {{ kind }}CollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING)
         .createTestSuite();
   }
 
@@ -749,7 +762,7 @@ public final class {{ kind }}CollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -780,7 +793,7 @@ public final class {{ kind }}CollectionsTest {
       Map.Entry<{{ metadata.boxed_class }}, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 
@@ -792,7 +805,7 @@ public final class {{ kind }}CollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE)
         .createTestSuite();
   }
 {% endif %}

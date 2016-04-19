@@ -44,7 +44,6 @@ import it.unimi.dsi.fastutil.bytes.ByteBigArrayBigList;
 import it.unimi.dsi.fastutil.bytes.ByteBigListIterator;
 import it.unimi.dsi.fastutil.bytes.ByteBigLists;
 import it.unimi.dsi.fastutil.bytes.ByteHash;
-import com.google.common.hash.Hashing;
 import it.unimi.dsi.fastutil.bytes.ByteLinkedOpenCustomHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteLists;
@@ -314,6 +313,10 @@ public final class ByteCollectionsTest {
         suite.addTest(getUnmodifiableByteArraySetTests());
       }
       suite.addTest(getByteOpenHashSetTests());
+      suite.addTest(getSynchronizedByteOpenHashSetTests());
+      suite.addTest(getUnmodifiableByteOpenHashSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonByteSetTests());
       suite.addTest(getEmptyByteSetTests());
       return suite;
@@ -338,6 +341,39 @@ public final class ByteCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedByteOpenHashSetTests() {
+      return getGeneralByteSetTests("ByteOpenHashSet",
+          c -> ByteSets.synchronize(new ByteOpenHashSet(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableByteOpenHashSetTests() {
+      return getGeneralByteSetTests("ByteOpenHashSet",
+          c -> ByteSets.unmodifiable(new ByteOpenHashSet(c)), Modifiable.IMMUTABLE);
+    }
+
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralByteSetTests("ByteLinkedOpenHashSet", c -> new ByteLinkedOpenHashSet(c),
+          Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      @SuppressWarnings("serial")
+      final class HashStrategy implements ByteHash.Strategy, java.io.Serializable {
+        @Override
+        public int hashCode(byte e) {
+          return e;
+        }
+
+        @Override
+        public boolean equals(byte a, byte b) {
+          return a == b;
+        }
+      }
+
+      return getGeneralByteSetTests("ByteLinkedOpenCustomHashSet",
+          c -> new ByteLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE);
+    }
 
     private static junit.framework.Test getGeneralByteSetTests(String testSuiteName,
         Function<Collection<Byte>, Set<Byte>> generator, Modifiable modifiable) {
@@ -400,8 +436,6 @@ public final class ByteCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ByteCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -409,31 +443,6 @@ public final class ByteCollectionsTest {
       suite.addTest(getSingletonByteSortedSetTests());
       suite.addTest(getEmptyByteSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralByteSortedSetTests("ByteLinkedOpenHashSet",
-          c -> new ByteLinkedOpenHashSet(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      @SuppressWarnings("serial")
-      final class HashStrategy implements ByteHash.Strategy, java.io.Serializable {
-        @Override
-        public int hashCode(byte e) {
-          return Hashing.murmur3_32().hashInt(e).asInt();
-        }
-
-        @Override
-        public boolean equals(byte a, byte b) {
-          return a == b;
-        }
-      }
-
-      return getGeneralByteSortedSetTests("ByteLinkedOpenCustomHashSet",
-          c -> new ByteLinkedOpenCustomHashSet(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1055,7 +1064,7 @@ public final class ByteCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     switch (modifiable) {
@@ -1080,10 +1089,8 @@ public final class ByteCollectionsTest {
     return MapTestSuiteBuilder.using(new ByteMapGenerator<V>(clazzV, map -> {
       Map.Entry<Byte, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<Byte, V> emptyMap,
@@ -1092,10 +1099,8 @@ public final class ByteCollectionsTest {
     return MapTestSuiteBuilder.using(new ByteMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1137,7 +1142,7 @@ public final class ByteCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1165,8 +1170,7 @@ public final class ByteCollectionsTest {
       Map.Entry<Byte, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1177,8 +1181,7 @@ public final class ByteCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class ByteMapGenerator<V> extends TestMapGeneratorBase<Byte, V> {

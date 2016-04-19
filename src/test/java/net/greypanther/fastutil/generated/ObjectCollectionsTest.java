@@ -316,7 +316,11 @@ public final class ObjectCollectionsTest {
         suite.addTest(getUnmodifiableObjectArraySetTests());
       }
       suite.addTest(getObjectOpenHashSetTests());
+      suite.addTest(getSynchronizedObjectOpenHashSetTests());
+      suite.addTest(getUnmodifiableObjectOpenHashSetTests());
       suite.addTest(getObjectOpenHashBigSetTests());
+      suite.addTest(getLinkedOpenHashSetTests());
+      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getSingletonObjectSetTests());
       suite.addTest(getEmptyObjectSetTests());
       return suite;
@@ -342,9 +346,42 @@ public final class ObjectCollectionsTest {
           Modifiable.MUTABLE);
     }
 
+    private static junit.framework.Test getSynchronizedObjectOpenHashSetTests() {
+      return getGeneralObjectSetTests("ObjectOpenHashSet",
+          c -> ObjectSets.synchronize(new ObjectOpenHashSet<String>(c)), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getUnmodifiableObjectOpenHashSetTests() {
+      return getGeneralObjectSetTests("ObjectOpenHashSet",
+          c -> ObjectSets.unmodifiable(new ObjectOpenHashSet<String>(c)), Modifiable.IMMUTABLE);
+    }
+
     private static junit.framework.Test getObjectOpenHashBigSetTests() {
       return getGeneralObjectSetTests("ObjectOpenHashBigSet",
           c -> new ObjectOpenHashBigSet<String>(c), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenHashSetTests() {
+      return getGeneralObjectSetTests("ObjectLinkedOpenHashSet",
+          c -> new ObjectLinkedOpenHashSet<String>(c), Modifiable.MUTABLE);
+    }
+
+    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
+      final class HashStrategy implements Hash.Strategy<String> {
+        @Override
+        public int hashCode(String o) {
+          return o.hashCode();
+        }
+
+        @Override
+        public boolean equals(String a, String b) {
+          return java.util.Objects.equals(a, b);
+        }
+      }
+
+      return getGeneralObjectSetTests("ObjectLinkedOpenCustomHashSet",
+          c -> new ObjectLinkedOpenCustomHashSet<String>(c, new HashStrategy()),
+          Modifiable.MUTABLE);
     }
 
     private static junit.framework.Test getGeneralObjectSetTests(String testSuiteName,
@@ -409,8 +446,6 @@ public final class ObjectCollectionsTest {
   public static final class SortedSets {
     public static junit.framework.Test suite() {
       TestSuite suite = new TestSuite("ObjectCollectionsTests.SortedSets");
-      suite.addTest(getLinkedOpenHashSetTests());
-      suite.addTest(getLinkedOpenCustomHashSetTests());
       suite.addTest(getAVLTreeSetTests());
       suite.addTest(getRBTreeSetTests());
       suite.addTest(getSynchronizedRBTreeSetTests());
@@ -418,30 +453,6 @@ public final class ObjectCollectionsTest {
       suite.addTest(getSingletonObjectSortedSetTests());
       suite.addTest(getEmptyObjectSortedSetTests());
       return suite;
-    }
-
-    private static junit.framework.Test getLinkedOpenHashSetTests() {
-      return getGeneralObjectSortedSetTests("ObjectLinkedOpenHashSet",
-          c -> new ObjectLinkedOpenHashSet<String>(c), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
-    }
-
-    private static junit.framework.Test getLinkedOpenCustomHashSetTests() {
-      final class HashStrategy implements Hash.Strategy<String> {
-        @Override
-        public int hashCode(String o) {
-          return o.hashCode();
-        }
-
-        @Override
-        public boolean equals(String a, String b) {
-          return java.util.Objects.equals(a, b);
-        }
-      }
-
-      return getGeneralObjectSortedSetTests("ObjectLinkedOpenCustomHashSet",
-          c -> new ObjectLinkedOpenCustomHashSet<String>(c, new HashStrategy()), Modifiable.MUTABLE,
-          Ordering.UNSORTED_OR_INSERTION_ORDER);
     }
 
     private static junit.framework.Test getAVLTreeSetTests() {
@@ -1071,7 +1082,7 @@ public final class ObjectCollectionsTest {
       SampleElements<V> valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(5);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.REMOVE_OPERATIONS);
     testSuiteFeatures.add(MapFeature.ALLOWS_NULL_KEYS);
@@ -1097,10 +1108,8 @@ public final class ObjectCollectionsTest {
     return MapTestSuiteBuilder.using(new ObjectMapGenerator<V>(clazzV, map -> {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonMapFactory.apply(entry.getKey(), entry.getValue());
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ONE,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ONE,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getEmptyMapTests(Class<V> clazzV, Map<String, V> emptyMap,
@@ -1109,10 +1118,8 @@ public final class ObjectCollectionsTest {
     return MapTestSuiteBuilder.using(new ObjectMapGenerator<V>(clazzV, map -> {
       assertEquals(0, map.size());
       return emptyMap;
-    } , valueSampleElements))
-        .named(testSuiteName).withFeatures(CollectionSize.ZERO,
-            CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS, CollectionFeature.NON_STANDARD_TOSTRING)
-        .createTestSuite();
+    } , valueSampleElements)).named(testSuiteName).withFeatures(CollectionSize.ZERO,
+        CollectionFeature.SERIALIZABLE, CollectionFeature.NON_STANDARD_TOSTRING).createTestSuite();
   }
 
   private static <V> junit.framework.Test getSortedMapTests(Class<V> clazzV,
@@ -1154,7 +1161,7 @@ public final class ObjectCollectionsTest {
       V[] valueSampleElements, Modifiable modifiable) {
     List<Feature<?>> testSuiteFeatures = new ArrayList<>(8);
     testSuiteFeatures.add(CollectionSize.ANY);
-    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS);
+    testSuiteFeatures.add(CollectionFeature.SERIALIZABLE);
     testSuiteFeatures.add(CollectionFeature.NON_STANDARD_TOSTRING);
     testSuiteFeatures.add(CollectionFeature.KNOWN_ORDER);
     testSuiteFeatures.add(CollectionFeature.SUBSET_VIEW);
@@ -1184,8 +1191,7 @@ public final class ObjectCollectionsTest {
       Map.Entry<String, V> entry = Iterables.getOnlyElement(map.entrySet());
       return singletonSortedMapFactory.apply(entry.getKey(), entry.getValue());
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ONE, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   @SuppressWarnings("unused")
@@ -1196,8 +1202,7 @@ public final class ObjectCollectionsTest {
       assertEquals(0, map.size());
       return emptyMap;
     } , valueSampleElements)).named(testSuiteName)
-        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE_INCLUDING_VIEWS)
-        .createTestSuite();
+        .withFeatures(CollectionSize.ZERO, CollectionFeature.SERIALIZABLE).createTestSuite();
   }
 
   private static final class ObjectMapGenerator<V> extends TestMapGeneratorBase<String, V> {
